@@ -18,7 +18,6 @@
     "@nuxtjs/bulma": "^1.3.0",
     "ethers": "^5.0.19",
     "fontsource-ubuntu": "^3.0.9",
-    "jusdefi": "git+ssh://git@github.com:jusdefi/jusdefi",
     "node-sass": "^4.14.1",
     "nuxt": "^2.14.7",
     "sass-loader": "^10.0.4"
