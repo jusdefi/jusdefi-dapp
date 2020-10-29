@@ -4092,6 +4092,11 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
+fontsource-ubuntu@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/fontsource-ubuntu/-/fontsource-ubuntu-3.0.9.tgz#32a79a19e3dc10f6f549b21601cae0dd705479a8"
+  integrity sha512-9woIW2Xkta91wWL1Zkoo9UU8hyVojBvoDh6K15lwVUzHp3h0eFCuJVfhuvMrRF8jamkzhttZ1KX11xpG53IbMA==
+
 for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
