@@ -67,7 +67,7 @@ export default {
   },
 
   hooks: {
-    build: {
+    generate: {
       before: function () {
         cp.execSync('yarn licenses generate-disclaimer --silent > static/licenses.txt');
       },
