@@ -1,7 +1,8 @@
-@import 'fontsource-ubuntu/latin.css';
+@import 'fontsource-ubuntu/400.css';
+@import 'fontsource-ubuntu/700.css';
 
 body {
-  font-family: 'Ubuntu';
+  font-family: 'Ubuntu' !important;
 }
 
 $primary: #5e35b1;
@@ -11,3 +12,7 @@ $primay-hover: #4e3096;
 $info-hover: #25ad9f;
 
 @import '~bulma';
+
+.title {
+  font-weight: 700 !important;
+}
