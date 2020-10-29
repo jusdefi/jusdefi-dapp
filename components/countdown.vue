@@ -3,7 +3,7 @@
     <div class="hero-body">
       <div class="container">
         <div class="box">
-          <div class="display container has-text-centered">
+          <div class="display container has-text-centered has-text-info">
             {{ display }}
           </div>
         </div>
