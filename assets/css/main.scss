@@ -1,0 +1,10 @@
+$primary: #5e35b1;
+$info: #27ccc0;
+
+$main-hover: #4e3096;
+$secondary-hover: #25ad9f;
+
+.is-main-hover { background: $main-hover }
+.is-secondary-hover { background: $secondary-hover }
+
+@import '~bulma';
