@@ -14,11 +14,14 @@
 
 <script>
 let now = function () {
-  let remaining = 1604088000 - Math.floor(new Date().getTime() / 1000);
-  let hours = Math.floor(remaining / (60 * 60)).toString().padStart(2, '0');
-  let minutes = Math.floor(remaining % (60 * 60) / 60).toString().padStart(2, '0');
-  let seconds = Math.floor(remaining % 60).toString().padStart(2, '0');
-  return `${ hours }:${ minutes }:${ seconds }`;
+  let remaining = 1604692800 - Math.floor(new Date().getTime() / 1000);
+
+  let seconds = Math.floor(remaining % 60);
+  let minutes = Math.floor(remaining / 60 % 60);
+  let hours   = Math.floor(remaining / (60 * 60) % 24);
+  let days    = Math.floor(remaining / (60 * 60 * 24));
+
+  return [days, hours, minutes, seconds].map(n => `${ n }`.padStart(2, '0')).join(':');
 };
 
 export default {
