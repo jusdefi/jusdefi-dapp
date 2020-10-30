@@ -104,11 +104,8 @@
 import { ethers } from 'ethers';
 import BN from 'bn.js';
 
-// TODO: import ABIs
-const JusDeFi = {};
-const jdfiStakingPool = {};
-// import JusDeFi from 'jusdefi/abi/JusDeFi.json';
-// import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
+import JusDeFi from 'jusdefi/abi/JusDeFi.json';
+import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
 
 export default {
   data: function () {
