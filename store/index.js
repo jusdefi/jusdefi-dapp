@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { ethers } from 'ethers';
+import detectEthereumProvider from '@metamask/detect-provider';
 
 Vue.use(Vuex);
 
@@ -28,19 +29,21 @@ export default function () {
       },
     },
     actions: {
-      connect: function (context) {
-        if (global.ethereum) {
-          global.ethereum.on('networkChanged', function (payload) {
+      connect: async function (context) {
+        const provider = await detectEthereumProvider();
+
+        if (provider) {
+          provider.on('networkChanged', function (payload) {
             context.commit('setNetwork', payload);
           });
-          context.commit('setNetwork', global.ethereum.networkVersion);
+          context.commit('setNetwork', provider.networkVersion);
 
-          global.ethereum.on('accountsChanged', function (payload) {
+          provider.on('accountsChanged', function (payload) {
             context.commit('setAccount', payload[0]);
           });
-          context.commit('setAccount', global.ethereum.selectedAddress);
+          context.commit('setAccount', provider.selectedAddress);
 
-          global.ethereum.enable();
+          provider.enable();
 
           context.commit('setProvider');
         } else {
