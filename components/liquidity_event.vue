@@ -98,7 +98,7 @@
                 :disabled="!$store.getters.connected"
                 @click="deposit()"
               >
-                Deposit
+                Deposit ETH
               </button>
             </p>
           </div>
