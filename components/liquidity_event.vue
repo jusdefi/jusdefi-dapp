@@ -124,7 +124,7 @@ export default {
       jusdefiAddress: deployments.jusdefi,
       jdfiStakingPoolAddress: deployments.jdfiStakingPool,
 
-      instance: null,
+      jusdefi: null,
       jdfiStakingPool: null,
 
       loading: false,
@@ -135,8 +135,8 @@ export default {
 
       inputDeposit: 0,
 
-      deadline: 1604952000,
-      timeLeft: this.formatTimeRemaining(1604952000),
+      deadline: 1604951460,
+      timeLeft: this.formatTimeRemaining(1604951460),
 
       totalAvailable: ethers.utils.parseEther('10000'),
       withdrawn: null,
@@ -152,10 +152,6 @@ export default {
       if (curr) {
         this.getEthBalance();
       }
-    },
-
-    instance: function () {
-      this.getStatus();
     },
 
     jdfiStakingPool: function () {
@@ -175,7 +171,7 @@ export default {
 
       try {
         let signer = this.$store.getters.provider.getSigner();
-        this.instance = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
+        this.jusdefi = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
         this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
       } catch (e) {
         this.error = e.message;
@@ -203,20 +199,8 @@ export default {
       try {
         let { currentAccount } = this.$store.getters;
         this.balanceJDFIS = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
-        let remaining = await this.jdfiStakingPool.callStatic.balanceOf(this.instance.address);
+        let remaining = await this.jdfiStakingPool.callStatic.balanceOf(this.jusdefi.address);
         this.withdrawn = this.totalAvailable.sub(remaining);
-      } catch (e) {
-        this.error = e.message;
-      }
-
-      this.loading = false;
-    },
-
-    getStatus: async function () {
-      this.loading = true;
-
-      try {
-        this.deadline = (await this.instance.callStatic._liquidityEventClosedAt()).toNumber();
       } catch (e) {
         this.error = e.message;
       }
@@ -228,7 +212,7 @@ export default {
       this.loading = true;
 
       try {
-        let tx = await this.instance.liquidityEventDeposit({
+        let tx = await this.jusdefi.liquidityEventDeposit({
           value: ethers.utils.parseEther(this.inputDeposit),
         });
         await tx.wait();
