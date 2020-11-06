@@ -34,7 +34,7 @@
       <div class="columns">
         <div class="column">
           <h2 class="subtitle has-text-dark">
-            JDFI Claimed: {{ formatBalance(withdrawn, 0) }} / {{ formatBalance(totalAvailable, 0) }}
+            JDFI Claimed: <span v-if="$store.getters.connected">{{ formatBalance(withdrawn, 0) }} / {{ formatBalance(totalAvailable, 0) }}</span>
           </h2>
           <progress
             v-if="!withdrawn"
