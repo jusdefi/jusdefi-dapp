@@ -33,6 +33,9 @@ export default function () {
         const provider = await detectEthereumProvider();
 
         if (provider) {
+          provider.enable();
+          context.commit('setProvider');
+
           provider.on('networkChanged', function (payload) {
             context.commit('setNetwork', payload);
           });
@@ -42,10 +45,6 @@ export default function () {
             context.commit('setAccount', payload[0]);
           });
           context.commit('setAccount', provider.selectedAddress);
-
-          provider.enable();
-
-          context.commit('setProvider');
         } else {
           alert('Metamask is required to use this application.  See https://metamask.io/.');
         }
