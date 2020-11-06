@@ -68,7 +68,7 @@
 
       <div class="columns">
         <div class="column">
-          <div class="table">
+          <table class="table">
             <tbody>
               <tr>
                 <td>ETH Balance</td>
@@ -79,7 +79,7 @@
                 <td>{{ formatBalance(balanceJDFIS) }}</td>
               </tr>
             </tbody>
-          </div>
+          </table>
         </div>
 
         <div class="column">
