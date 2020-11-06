@@ -115,11 +115,14 @@ import BN from 'bn.js';
 import JusDeFi from 'jusdefi/abi/JusDeFi.json';
 import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
 
+import deployments from 'jusdefi/data/deployments.json';
+
 export default {
   data: function () {
     return {
       // TODO: import address
-      instanceAddress: '0x5fbdb2315678afecb367f032d93f642f64180aa3',
+      jusdefiAddress: deployments.jusdefi,
+      jdfiStakingPoolAddress: deployments.jdfiStakingPool,
 
       instance: null,
       jdfiStakingPool: null,
@@ -172,9 +175,8 @@ export default {
 
       try {
         let signer = this.$store.getters.provider.getSigner();
-        this.instance = new ethers.Contract(this.instanceAddress, JusDeFi, signer);
-        let jdfiStakingPoolAddress = await this.instance.callStatic._jdfiStakingPool();
-        this.jdfiStakingPool = new ethers.Contract(jdfiStakingPoolAddress, JDFIStakingPool, signer);
+        this.instance = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
+        this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
       } catch (e) {
         this.error = e.message;
       }
