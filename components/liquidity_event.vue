@@ -1,98 +1,106 @@
 <template>
-  <div class="hero is-fullheight is-primary">
-    <div class="hero-body">
-      <div class="container">
-        <div class="box">
-          <div class="level">
-            <div class="level-left">
-              <h1 class="title has-text-dark">JusDeFi Liquidity Event</h1>
-            </div>
+  <div class="container">
+    <div class="box">
+      <div class="level">
+        <div class="level-left">
+          <h1 class="title has-text-dark">
+            JusDeFi Liquidity Event
+          </h1>
+        </div>
 
-            <div class="level-right">
-              <button
-                type="button"
-                class="button is-fullwidth is-info"
-                :disabled="$store.getters.connected"
-                @click="$store.dispatch('connect')"
-              >
-                <span v-if="$store.getters.connected" class="is-family-monospace">{{ $store.getters.currentAccount }}</span>
-                <span v-else>Connect to Metamask</span>
-              </button>
-            </div>
-          </div>
+        <div class="level-right">
+          <button
+            type="button"
+            class="button is-fullwidth is-info"
+            :disabled="$store.getters.connected"
+            @click="$store.dispatch('connect')"
+          >
+            <span v-if="$store.getters.connected" class="is-family-monospace">{{ $store.getters.currentAccount }}</span>
+            <span v-else>Connect to Metamask</span>
+          </button>
+        </div>
+      </div>
 
-          <article v-show="error" class="message">
-            <div class="message-header">
-              <p>Error</p>
-              <button class="delete" aria-label="delete" @click="error = null" />
-            </div>
-            <div class="message-body">
-              {{ error }}
-            </div>
-          </article>
+      <article v-show="error" class="message">
+        <div class="message-header">
+          <p>Error</p>
+          <button class="delete" aria-label="delete" @click="error = null" />
+        </div>
+        <div class="message-body">
+          {{ error }}
+        </div>
+      </article>
 
-          <div class="columns">
-            <div class="column">
-              <h2 class="subtitle has-text-dark">JDFI Claimed</h2>
-              <progress
-                class="progress is-info"
-                max="100"
-              >
-                TODO
-              </progress>
-            </div>
+      <div class="columns">
+        <div class="column">
+          <h2 class="subtitle has-text-dark">
+            JDFI Claimed: {{ formatBalance(withdrawn, 0) }} / {{ formatBalance(totalAvailable, 0) }}
+          </h2>
+          <progress
+            v-if="!withdrawn"
+            class="progress is-info"
+          />
+          <progress
+            v-else
+            class="progress is-info"
+            :max="totalAvailable"
+            :value="withdrawn"
+          />
+        </div>
 
-            <div class="column">
-              <h2 class="subtitle has-text-dark">Time Remaining</h2>
-              <p>TODO</p>
-            </div>
+        <div class="column">
+          <h2 class="subtitle has-text-dark">
+            Time Remaining
+          </h2>
+          <p>{{ timeLeft }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="level">
+        <div class="level-left">
+          <h2 class="subtitle has-text-dark">
+            Purchase
+          </h2>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="table">
+            <tbody>
+              <tr>
+                <td>ETH Balance</td>
+                <td>{{ formatBalance(balanceETH) }}</td>
+              </tr>
+              <tr>
+                <td>JDFI/S Balance</td>
+                <td>{{ formatBalance(balanceJDFIS) }}</td>
+              </tr>
+            </tbody>
           </div>
         </div>
 
-        <div class="box">
-          <div class="level">
-            <div class="level-left">
-              <h2 class="subtitle has-text-dark">Purchase</h2>
-            </div>
-          </div>
-
-          <div class="columns">
-            <div class="column">
-              <div class="table">
-                <tbody>
-                  <tr>
-                    <td>ETH Balance</td>
-                    <td>{{ format(balanceETH) }}</td>
-                  </tr>
-                  <tr>
-                    <td>JDFI/S Balance</td>
-                    <td>{{ format(balanceJDFIS) }}</td>
-                  </tr>
-                </tbody>
-              </div>
-            </div>
-
-            <div class="column">
-              <div class="field has-addons">
-                <p class="control">
-                  <input
-                    v-model="inputDeposit"
-                    class="input"
-                    type="number"
-                  >
-                </p>
-                <p class="control is-expanded">
-                  <button
-                    type="button"
-                    class="button is-fullwidth is-info"
-                    :disabled="!$store.getters.connected"
-                    @click="deposit()"
-                  >
-                    Deposit
-                  </button>
-                </p>
-              </div>
-            </div>
+        <div class="column">
+          <div class="field has-addons">
+            <p class="control">
+              <input
+                v-model="inputDeposit"
+                class="input"
+                type="number"
+              >
+            </p>
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="!$store.getters.connected"
+                @click="deposit()"
+              >
+                Deposit ETH
+              </button>
+            </p>
           </div>
         </div>
       </div>
@@ -104,17 +112,17 @@
 import { ethers } from 'ethers';
 import BN from 'bn.js';
 
-// TODO: import ABIs
-const JusDeFi = {};
-const jdfiStakingPool = {};
-// import JusDeFi from 'jusdefi/abi/JusDeFi.json';
-// import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
+import JusDeFi from 'jusdefi/abi/JusDeFi.json';
+import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
+
+import deployments from 'jusdefi/data/deployments.json';
 
 export default {
   data: function () {
     return {
       // TODO: import address
-      instanceAddress: '0x5fbdb2315678afecb367f032d93f642f64180aa3',
+      jusdefiAddress: deployments.jusdefi,
+      jdfiStakingPoolAddress: deployments.jdfiStakingPool,
 
       instance: null,
       jdfiStakingPool: null,
@@ -125,10 +133,14 @@ export default {
       balanceETH: new BN(0),
       balanceJDFIS: new BN(0),
 
-      liquidityEventClosedAt: new BN(0),
-
       inputDeposit: 0,
-    }
+
+      deadline: 1604952000,
+      timeLeft: this.formatTimeRemaining(1604952000),
+
+      totalAvailable: ethers.utils.parseEther('10000'),
+      withdrawn: null,
+    };
   },
 
   watch: {
@@ -148,7 +160,13 @@ export default {
 
     jdfiStakingPool: function () {
       this.getJDFISBalance();
-    }
+    },
+  },
+
+  mounted: function () {
+    setInterval(function () {
+      this.timeLeft = this.formatTimeRemaining(this.deadline);
+    }.bind(this), 1000);
   },
 
   methods: {
@@ -156,10 +174,9 @@ export default {
       this.loading = true;
 
       try {
-        let signer = this.$store.getters.provider.getSigner()
-        this.instance = new ethers.Contract(this.instanceAddress, JusDeFi, signer);
-        let jdfiStakingPoolAddress = await this.instance.callStatic._jdfiStakingPool();
-        this.jdfiStakingPool = new ethers.Contract(jdfiStakingPoolAddress, JDFIStakingPool, signer);
+        let signer = this.$store.getters.provider.getSigner();
+        this.instance = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
+        this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
       } catch (e) {
         this.error = e.message;
       }
@@ -186,6 +203,8 @@ export default {
       try {
         let { currentAccount } = this.$store.getters;
         this.balanceJDFIS = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
+        let remaining = await this.jdfiStakingPool.callStatic.balanceOf(this.instance.address);
+        this.withdrawn = this.totalAvailable.sub(remaining);
       } catch (e) {
         this.error = e.message;
       }
@@ -197,7 +216,7 @@ export default {
       this.loading = true;
 
       try {
-        this.liquidityEventClosedAt = await this.instance.callStatic._liquidityEventClosedAt();
+        this.deadline = (await this.instance.callStatic._liquidityEventClosedAt()).toNumber();
       } catch (e) {
         this.error = e.message;
       }
@@ -210,20 +229,32 @@ export default {
 
       try {
         let tx = await this.instance.liquidityEventDeposit({
-          value: ethers.utils.parseEther(this.inputDeposit)
+          value: ethers.utils.parseEther(this.inputDeposit),
         });
         await tx.wait();
+        await this.getEthBalance();
         await this.getJDFISBalance();
       } catch (e) {
-        this.error = e.message;
+        this.error = e.data.message;
       }
 
       this.loading = false;
     },
 
-    format: function (bn) {
-      return (Number(bn.toString()) / 1e18).toFixed(2);
+    formatBalance: function (bn, decimals = 2) {
+      return (Number((bn || new BN(0)).toString()) / 1e18).toFixed(decimals);
+    },
+
+    formatTimeRemaining: function (target) {
+      let remaining = target - Math.floor(new Date().getTime() / 1000);
+
+      let seconds = Math.floor(remaining % 60);
+      let minutes = Math.floor(remaining / 60 % 60);
+      let hours   = Math.floor(remaining / (60 * 60) % 24);
+      let days    = Math.floor(remaining / (60 * 60 * 24));
+
+      return [days, hours, minutes, seconds].map(n => `${ n }`.padStart(2, '0')).join(':');
     },
   },
-}
+};
 </script>

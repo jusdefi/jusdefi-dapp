@@ -1,12 +1,15 @@
 <template>
-  <Countdown />
+  <div class="hero is-fullheight is-primary">
+    <div class="hero-body">
+      <Layout />
+    </div>
+  </div>
 </template>
 
 <script>
-import Countdown from '../components/countdown.vue';
-import LiquidityEvent from '../components/liquidity_event.vue';
+import Layout from '../components/liquidity_event.vue';
 
 export default {
-  components: { Countdown, LiquidityEvent },
-}
+  components: { Layout },
+};
 </script>
