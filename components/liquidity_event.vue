@@ -34,7 +34,7 @@
       <div class="columns">
         <div class="column">
           <h2 class="subtitle has-text-dark">
-            JDFI Claimed
+            JDFI Claimed: {{ formatBalance(withdrawn, 0) }} / {{ formatBalance(totalAvailable, 0) }}
           </h2>
           <progress
             v-if="!withdrawn"
@@ -45,9 +45,7 @@
             class="progress is-info"
             :max="totalAvailable"
             :value="withdrawn"
-          >
-            {{ percent }}
-          </progress>
+          />
         </div>
 
         <div class="column">
@@ -142,12 +140,6 @@ export default {
     };
   },
 
-  computed: {
-    percent: function () {
-      return `${ this.withdrawn.mul(new BN(100)).div(this.totalAvailable) }%`;
-    },
-  },
-
   watch: {
     '$store.getters.currentNetwork': function () {
       this.getInstance();
@@ -220,6 +212,7 @@ export default {
 
     getStatus: async function () {
       this.loading = true;
+
       try {
         this.deadline = (await this.instance.callStatic._liquidityEventClosedAt()).toNumber();
       } catch (e) {
@@ -246,8 +239,8 @@ export default {
       this.loading = false;
     },
 
-    formatBalance: function (bn) {
-      return (Number(bn.toString()) / 1e18).toFixed(2);
+    formatBalance: function (bn, decimals = 2) {
+      return (Number((bn || new BN(0)).toString()) / 1e18).toFixed(decimals);
     },
 
     formatTimeRemaining: function (target) {
