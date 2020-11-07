@@ -219,7 +219,9 @@ export default {
         await this.getEthBalance();
         await this.getJDFISBalance();
       } catch (e) {
-        this.error = e.data.message;
+        if (e.data) {
+          this.error = e.data.message;
+        }
       }
 
       this.loading = false;

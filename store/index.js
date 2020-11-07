@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { ethers } from 'ethers';
-import detectEthereumProvider from '@metamask/detect-provider';
+
 
 Vue.use(Vuex);
 
@@ -30,6 +30,10 @@ export default function () {
     },
     actions: {
       connect: async function (context) {
+        let detectEthereumProvider;
+        if (process.client) {
+          detectEthereumProvider = require('@metamask/detect-provider');
+        }
         const provider = await detectEthereumProvider();
 
         if (provider) {
