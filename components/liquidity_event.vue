@@ -163,10 +163,6 @@ export default {
     setInterval(function () {
       this.timeLeft = this.formatTimeRemaining(this.deadline);
     }.bind(this), 1000);
-
-    global.addEventListener('ethereum#initialized', function () {
-      this.$store.dispatch('connect');
-    }.bind(this))
   },
 
   methods: {
