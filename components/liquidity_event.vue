@@ -35,17 +35,17 @@
       <div class="columns">
         <div class="column">
           <h2 class="subtitle has-text-dark">
-            JDFI Claimed: <span v-if="$store.getters.connected">{{ formatBalance(withdrawn, 0) }} / {{ formatBalance(totalAvailable, 0) }}</span>
+            JDFI Claimed: <span v-if="$store.getters.connected">{{ formatBalance(claimedJDFIS, 0) }} / {{ formatBalance(totalJDFIS, 0) }}</span>
           </h2>
           <progress
-            v-if="!withdrawn"
+            v-if="!claimedJDFIS"
             class="progress is-info"
           />
           <progress
             v-else
             class="progress is-info"
-            :max="totalAvailable"
-            :value="withdrawn"
+            :max="totalJDFIS"
+            :value="claimedJDFIS"
           />
         </div>
 
@@ -121,7 +121,6 @@ import deployments from '../data/deployments.json';
 export default {
   data: function () {
     return {
-      // TODO: import address
       jusdefiAddress: deployments.jusdefi,
       jdfiStakingPoolAddress: deployments.jdfiStakingPool,
 
@@ -139,14 +138,14 @@ export default {
       deadline: 1604951460,
       timeLeft: this.formatTimeRemaining(1604951460),
 
-      totalAvailable: ethers.utils.parseEther('10000'),
-      withdrawn: null,
+      totalJDFIS: ethers.utils.parseEther('10000'),
+      claimedJDFIS: null,
     };
   },
 
   watch: {
     '$store.getters.currentNetwork': function () {
-      this.getInstance();
+      this.getContracts();
     },
 
     '$store.getters.currentAccount': function (curr) {
@@ -167,7 +166,7 @@ export default {
   },
 
   methods: {
-    getInstance: async function () {
+    getContracts: async function () {
       this.loading = true;
 
       try {
@@ -201,7 +200,7 @@ export default {
         let { currentAccount } = this.$store.getters;
         this.balanceJDFIS = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
         let remaining = await this.jdfiStakingPool.callStatic.balanceOf(this.jusdefi.address);
-        this.withdrawn = this.totalAvailable.sub(remaining);
+        this.claimedJDFIS = this.totalJDFIS.sub(remaining);
       } catch (e) {
         this.error = e.message;
       }
