@@ -36,7 +36,10 @@ export default function () {
     actions: {
       connect: async function (context) {
         context.commit('setConnecting', true);
-        const provider = await global.detectEthereumProvider({ timeout: 15000 });
+
+        let provider = await global.detectEthereumProvider({ timeout: 15000 });
+
+        provider = provider || global.ethereum;
 
         if (provider) {
           provider.enable();
