@@ -12,6 +12,7 @@
           <button
             type="button"
             class="button is-fullwidth is-info"
+            :class="{ 'is-loading': $store.getters.connecting }"
             :disabled="$store.getters.connected"
             @click="$store.dispatch('connect')"
           >

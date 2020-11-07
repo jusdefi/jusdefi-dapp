@@ -13,6 +13,7 @@ export default function () {
         currentAccount: null,
         provider: null,
         connected: false,
+        connecting: false,
       };
     },
     mutations: {
@@ -27,10 +28,15 @@ export default function () {
       setProvider: function (state) {
         state.provider = new ethers.providers.Web3Provider(global.ethereum);
       },
+
+      setConnecting: function (state, payload) {
+        state.connecting = payload;
+      },
     },
     actions: {
       connect: async function (context) {
-        const provider = await global.detectEthereumProvider();
+        context.commit('setConnecting', true);
+        const provider = await global.detectEthereumProvider({ timeout: 15000 });
 
         if (provider) {
           provider.enable();
@@ -48,6 +54,8 @@ export default function () {
         } else {
           alert('Metamask is required to use this application.  See https://metamask.io/.');
         }
+
+        context.commit('setConnecting', false);
       },
     },
     getters: {
@@ -55,6 +63,7 @@ export default function () {
       currentAccount: state => state.currentAccount,
       provider: state => state.provider,
       connected: state => !!state.currentAccount,
+      connecting: state => state.connecting,
     },
   });
 }
