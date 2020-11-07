@@ -20,6 +20,9 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/logox4.ico' },
     ],
+    script: [
+      { src: 'https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js' },
+    ],
   },
   /*
   ** Global CSS

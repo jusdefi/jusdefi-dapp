@@ -30,11 +30,7 @@ export default function () {
     },
     actions: {
       connect: async function (context) {
-        let detectEthereumProvider;
-        if (process.client) {
-          detectEthereumProvider = require('@metamask/detect-provider');
-        }
-        const provider = await detectEthereumProvider();
+        const provider = await global.detectEthereumProvider();
 
         if (provider) {
           provider.enable();
