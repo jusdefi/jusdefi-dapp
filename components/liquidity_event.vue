@@ -32,6 +32,12 @@
         </div>
       </article>
 
+      <p>Welcome to the JusDeFi Liquidity Event. See our <a href="https://www.jusde.fi/">home page</a> for more information.</p>
+
+      <p>The JusDeFi Liquidity Event interface works best with a Metamask-enabled desktop browser.</p>
+
+      <br>
+
       <div class="columns">
         <div class="column">
           <h2 class="subtitle has-text-dark">
