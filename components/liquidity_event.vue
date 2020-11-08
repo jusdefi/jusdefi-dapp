@@ -73,6 +73,10 @@
         </div>
       </div>
 
+      <p>Deposit ETH to receive staked JDFI.  4 JDFI per ETH.</p>
+
+      <br>
+
       <div class="columns">
         <div class="column">
           <table class="table">
