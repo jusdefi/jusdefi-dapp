@@ -193,7 +193,7 @@ export default {
         let { currentAccount } = this.$store.getters;
         this.balanceETH = await this.$store.getters.provider.getBalance(currentAccount);
       } catch (e) {
-        this.error = e.message;
+        // this.error = e.message;
       }
 
       this.loading = false;
@@ -208,7 +208,7 @@ export default {
         let remaining = await this.jdfiStakingPool.callStatic.balanceOf(this.jusdefi.address);
         this.claimedJDFIS = this.totalJDFIS.sub(remaining);
       } catch (e) {
-        this.error = e.message;
+        // this.error = e.message;
       }
 
       this.loading = false;
