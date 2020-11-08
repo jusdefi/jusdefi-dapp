@@ -243,9 +243,8 @@ export default {
       let seconds = Math.floor(remaining % 60);
       let minutes = Math.floor(remaining / 60 % 60);
       let hours   = Math.floor(remaining / (60 * 60) % 24);
-      let days    = Math.floor(remaining / (60 * 60 * 24));
 
-      return [days, hours, minutes, seconds].map(n => `${ n }`.padStart(2, '0')).join(':');
+      return [hours, minutes, seconds].map(n => `${ n }`.padStart(2, '0')).join(':');
     },
   },
 };
