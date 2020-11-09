@@ -316,7 +316,7 @@
                 type="button"
                 class="button is-info"
                 :disabled="!$store.getters.connected || balanceJDFIA.isZero()"
-                @click="inputUnlockJDFIS = balanceJDFIA"
+                @click="inputUnlockJDFIS = balanceJDFISLocked"
               >
                 max
               </button>
