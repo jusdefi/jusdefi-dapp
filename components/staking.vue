@@ -34,7 +34,7 @@
 
       <p>Welcome to the JusDeFi Staking Dashboard.  Earn rewards on staked JDFI or Uniswap liquidity tokens, and vote on protocol adjustments.  See our staking guide for more information.</p>
 
-      <br>
+      <!-- <br>
 
       <div class="columns">
         <div class="column">
@@ -99,7 +99,7 @@
             </p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div class="box">
