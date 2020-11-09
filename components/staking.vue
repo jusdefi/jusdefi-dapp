@@ -143,17 +143,17 @@
                 placeholder="JDFI Amount"
               >
             </p>
-            <p class="control is-expanded">
+            <p class="control">
               <button
                 type="button"
-                class="button is-fullwidth is-info"
+                class="button is-info"
                 :disabled="!$store.getters.connected || balanceJDFI.isZero()"
                 @click="setMaxStakeJDFI()"
               >
                 max
               </button>
             </p>
-            <p class="control">
+            <p class="control is-expanded">
               <button
                 type="button"
                 class="button is-fullwidth is-info"
@@ -174,17 +174,17 @@
                 placeholder="JDFI/S Amount"
               >
             </p>
-            <p class="control is-expanded">
+            <p class="control">
               <button
                 type="button"
-                class="button is-fullwidth is-info"
+                class="button is-info"
                 :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
                 @click="setMaxUnstakeJDFIS()"
               >
                 max
               </button>
             </p>
-            <p class="control">
+            <p class="control is-expanded">
               <button
                 type="button"
                 class="button is-fullwidth is-info"
@@ -305,7 +305,7 @@
           </div>
 
           <div class="field has-addons">
-            <p class="control">
+            <p class="control is-expanded">
               <input
                 v-model="inputUnlockJDFIS"
                 class="input"
@@ -313,10 +313,10 @@
                 placeholder="JDFI/S Amount"
               >
             </p>
-            <p class="control is-expanded">
+            <p class="control">
               <button
                 type="button"
-                class="button is-fullwidth is-info"
+                class="button is-info"
                 :disabled="!$store.getters.connected || balanceJDFISLocked.isZero()"
                 @click="setMaxUnlockJDFIS()"
               >
