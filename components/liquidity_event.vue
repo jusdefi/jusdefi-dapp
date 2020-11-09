@@ -38,30 +38,19 @@
 
       <br>
 
-      <div class="columns">
-        <div class="column">
-          <h2 class="subtitle has-text-dark">
-            JDFI Claimed: <span v-if="$store.getters.connected">{{ formatBalance(claimedJDFIS, 0) }} / {{ formatBalance(totalJDFIS, 0) }}</span>
-          </h2>
-          <progress
-            v-if="!claimedJDFIS"
-            class="progress is-info"
-          />
-          <progress
-            v-else
-            class="progress is-info"
-            :max="totalJDFIS"
-            :value="claimedJDFIS"
-          />
-        </div>
-
-        <div class="column">
-          <h2 class="subtitle has-text-dark">
-            Time Remaining
-          </h2>
-          <p>{{ timeLeft }}</p>
-        </div>
-      </div>
+      <h2 class="subtitle has-text-dark">
+        JDFI Claimed: <span v-if="$store.getters.connected">{{ formatBalance(claimedJDFIS, 0) }} / {{ formatBalance(totalJDFIS, 0) }}</span>
+      </h2>
+      <progress
+        v-if="!claimedJDFIS"
+        class="progress is-info"
+      />
+      <progress
+        v-else
+        class="progress is-info"
+        :max="totalJDFIS"
+        :value="claimedJDFIS"
+      />
     </div>
 
     <div class="box">
@@ -146,7 +135,6 @@ export default {
       inputDeposit: 0,
 
       deadline: 1604951460,
-      timeLeft: this.formatTimeRemaining(1604951460),
 
       totalJDFIS: ethers.utils.parseEther('10000'),
       claimedJDFIS: null,
@@ -167,12 +155,6 @@ export default {
     jdfiStakingPool: function () {
       this.getJDFISBalance();
     },
-  },
-
-  mounted: function () {
-    setInterval(function () {
-      this.timeLeft = this.formatTimeRemaining(this.deadline);
-    }.bind(this), 1000);
   },
 
   methods: {
@@ -239,16 +221,6 @@ export default {
 
     formatBalance: function (bn, decimals = 2) {
       return (Number((bn || new BN(0)).toString()) / 1e18).toFixed(decimals);
-    },
-
-    formatTimeRemaining: function (target) {
-      let remaining = target - Math.floor(new Date().getTime() / 1000);
-
-      let seconds = Math.floor(remaining % 60);
-      let minutes = Math.floor(remaining / 60 % 60);
-      let hours   = Math.floor(remaining / (60 * 60) % 24);
-
-      return [hours, minutes, seconds].map(n => `${ n }`.padStart(2, '0')).join(':');
     },
   },
 };
