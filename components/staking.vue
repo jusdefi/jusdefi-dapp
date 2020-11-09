@@ -308,7 +308,7 @@
                 v-model="inputUnlockJDFIS"
                 class="input"
                 type="number"
-                placeholder="JDFI/A Amount"
+                placeholder="JDFI/S Amount"
               >
             </p>
             <p class="control is-expanded">
