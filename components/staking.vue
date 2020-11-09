@@ -262,6 +262,79 @@
         </div>
       </div>
     </div>
+
+    <div class="box">
+      <div class="level">
+        <div class="level-left">
+          <h2 class="subtitle has-text-dark">
+            Convert JDFI/A to locked JDFI/S
+          </h2>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>JDFI/A Balance</td>
+                <td>{{ formatBalance(balanceJDFIA) }}</td>
+              </tr>
+              <tr>
+                <td>Locked JDFI/S Balance</td>
+                <td>{{ formatBalance(balanceJDFISLocked) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="column">
+          <div class="field">
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="balanceJDFIA.isZero()"
+                @click="convertJDFIA()"
+              >
+                Convert
+              </button>
+            </p>
+          </div>
+
+          <div class="field has-addons">
+            <p class="control">
+              <input
+                v-model="inputUnlockJDFIS"
+                class="input"
+                type="number"
+                placeholder="ETH Amount"
+              >
+            </p>
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-info"
+                :disabled="!$store.getters.connected || maxStakeJDFI.isZero()"
+                @click="inputUnlockJDFIS = requiredETHUnlock()"
+              >
+                max
+              </button>
+            </p>
+            <p class="control">
+              <button
+                type="button"
+                class="button is-info"
+                :disabled="!$store.getters.connected"
+                @click="unlockJDFIA()"
+              >
+                Unlock JDFI/A
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -273,6 +346,7 @@ import JusDeFi from '../abi/JusDeFi.json';
 import FeePool from '../abi/FeePool.json';
 import JDFIStakingPool from '../abi/JDFIStakingPool.json';
 import UNIV2StakingPool from '../abi/UNIV2StakingPool.json';
+import AirdropToken from '../abi/AirdropToken.json';
 
 import deployments from '../data/deployments.json';
 
@@ -281,6 +355,7 @@ export default {
     return {
       jusdefiAddress: deployments.jusdefi,
       jdfiStakingPoolAddress: deployments.jdfiStakingPool,
+      airdropTokenAddress: deployments.airdropToken,
 
       jusdefi: null,
       feePool: null,
@@ -293,6 +368,7 @@ export default {
       balanceETH: new BN(0),
       balanceJDFI: new BN(0),
       balanceJDFIS: new BN(0),
+      balanceJDFIA: new BN(0),
       balanceUNIV2: new BN(0),
       balanceUNIV2S: new BN(0),
 
@@ -304,6 +380,7 @@ export default {
 
       inputStakeJDFI: '',
       inputUnstakeJDFIS: '',
+      inputUnlockJDFIS: '',
 
       // deadlineRebase: 'TODO: Sunday',
       // timeLeftRebase: 'TODO',
@@ -342,6 +419,7 @@ export default {
         // this.feePool = new ethers.Contract(this.feePoolAddress, FeePool, signer);
         this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
         // this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
+        this.airdropToken = new ethers.Contract(this.airdropTokenAddress, AirdropToken, signer);
       } catch (e) {
         this.error = e.message;
       }
@@ -364,8 +442,12 @@ export default {
 
       if (this.jdfiStakingPool) {
         let totalBalance = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
-        let lockedBalance = await this.jdfiStakingPool.callStatic.lockedBalanceOf(currentAccount);
-        this.balanceJDFIS = totalBalance.sub(lockedBalance);
+        this.balanceJDFISLocked = await this.jdfiStakingPool.callStatic.lockedBalanceOf(currentAccount);
+        this.balanceJDFIS = totalBalance.sub(this.balanceJDFISLocked);
+      }
+
+      if (this.airdropToken) {
+        this.balanceJDFIA = await this.airdropToken.callStatic.balanceOf(currentAccount);
       }
 
       this.loading = false;
@@ -439,6 +521,46 @@ export default {
       this.loading = false;
 
       await this.getBalances();
+    },
+
+    convertJDFIA: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.airdropToken.exchange();
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
+
+    unlockJDFIA: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.jdfiStakingPool.unlock({
+          value: ethers.utils.parseEther(this.inputUnlockJDFIS),
+        });
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
+
+    requiredETHUnlock: function () {
+      return this.balanceJDFIA.div(new BN(4));
     },
 
     formatBalance: function (bn, decimals = 2) {
