@@ -147,8 +147,8 @@
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected || maxStakeJDFI.isZero()"
-                @click="inputStakeJDFI = balanceJDFI"
+                :disabled="!$store.getters.connected || balanceJDFI.isZero()"
+                @click="setMaxStakeJDFI()"
               >
                 max
               </button>
@@ -157,7 +157,7 @@
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected"
+                :disabled="!$store.getters.connected || balanceJDFI.isZero()"
                 @click="stakeJDFI()"
               >
                 Stake JDFI
@@ -171,15 +171,15 @@
                 v-model="inputUnstakeJDFIS"
                 class="input"
                 type="number"
-                placeholder="JDFI Amount"
+                placeholder="JDFI/S Amount"
               >
             </p>
             <p class="control is-expanded">
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected || maxUnstakeJDFI.isZero()"
-                @click="inputUnstakeJDFIS = balanceJDFIS"
+                :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
+                @click="setMaxUnstakeJDFIS()"
               >
                 max
               </button>
@@ -188,7 +188,7 @@
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected"
+                :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
                 @click="unstakeJDFIS()"
               >
                 Unstake JDFI
@@ -317,8 +317,8 @@
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected || balanceJDFIA.isZero()"
-                @click="inputUnlockJDFIS = balanceJDFISLocked"
+                :disabled="!$store.getters.connected || balanceJDFISLocked.isZero()"
+                @click="setMaxUnlockJDFIS()"
               >
                 max
               </button>
@@ -374,9 +374,6 @@ export default {
       balanceJDFIA: new BN(0),
       balanceUNIV2: new BN(0),
       balanceUNIV2S: new BN(0),
-
-      maxStakeJDFI: new BN(0),
-      maxUnstakeJDFI: new BN(0),
 
       rewardsJDFI: new BN(0),
       rewardsUNIV2: new BN(0),
@@ -559,6 +556,18 @@ export default {
       this.loading = false;
 
       await this.getBalances();
+    },
+
+    setMaxStakeJDFI: function () {
+      this.inputStakeJDFI = ethers.utils.formatEther(this.balanceJDFI);
+    },
+
+    setMaxUnstakeJDFIS: function () {
+      this.inputUnstakeJDFIS = ethers.utils.formatEther(this.balanceJDFIS);
+    },
+
+    setMaxUnlockJDFIS: function () {
+      this.unlockJDFIS = ethers.utils.formatEther(this.balanceJDFISLocked);
     },
 
     formatBalance: function (bn, decimals = 2) {
