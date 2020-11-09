@@ -146,7 +146,7 @@
             <p class="control is-expanded">
               <button
                 type="button"
-                class="button is-info"
+                class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceJDFI.isZero()"
                 @click="setMaxStakeJDFI()"
               >
@@ -156,7 +156,7 @@
             <p class="control">
               <button
                 type="button"
-                class="button is-info"
+                class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceJDFI.isZero()"
                 @click="stakeJDFI()"
               >
@@ -177,7 +177,7 @@
             <p class="control is-expanded">
               <button
                 type="button"
-                class="button is-info"
+                class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
                 @click="setMaxUnstakeJDFIS()"
               >
@@ -187,7 +187,7 @@
             <p class="control">
               <button
                 type="button"
-                class="button is-info"
+                class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
                 @click="unstakeJDFIS()"
               >
@@ -316,7 +316,7 @@
             <p class="control is-expanded">
               <button
                 type="button"
-                class="button is-info"
+                class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceJDFISLocked.isZero()"
                 @click="setMaxUnlockJDFIS()"
               >
@@ -326,7 +326,7 @@
             <p class="control">
               <button
                 type="button"
-                class="button is-info"
+                class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceJDFISLocked.isZero()"
                 @click="unlockJDFIS()"
               >
