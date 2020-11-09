@@ -567,7 +567,7 @@ export default {
     },
 
     setMaxUnlockJDFIS: function () {
-      this.unlockJDFIS = ethers.utils.formatEther(this.balanceJDFISLocked);
+      this.inputUnlockJDFIS = ethers.utils.formatEther(this.balanceJDFISLocked);
     },
 
     formatBalance: function (bn, decimals = 2) {
