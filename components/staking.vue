@@ -308,15 +308,15 @@
                 v-model="inputUnlockJDFIS"
                 class="input"
                 type="number"
-                placeholder="ETH Amount"
+                placeholder="JDFI/A Amount"
               >
             </p>
             <p class="control is-expanded">
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected || maxStakeJDFI.isZero()"
-                @click="inputUnlockJDFIS = requiredETHUnlock()"
+                :disabled="!$store.getters.connected || balanceJDFIA.isZero()"
+                @click="inputUnlockJDFIS = balanceJDFIA"
               >
                 max
               </button>
@@ -325,10 +325,10 @@
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected"
-                @click="unlockJDFIA()"
+                :disabled="!$store.getters.connected || balanceJDFISLocked.isZero()"
+                @click="unlockJDFIS()"
               >
-                Unlock JDFI/A
+                Unlock JDFI/S
               </button>
             </p>
           </div>
@@ -474,7 +474,6 @@ export default {
       this.loading = true;
 
       try {
-        console.log(this.inputUnstakeJDFIS);
         let tx = await this.jdfiStakingPool.unstake(ethers.utils.parseEther(this.inputUnstakeJDFIS));
         await tx.wait();
       } catch (e) {
@@ -540,12 +539,12 @@ export default {
       await this.getBalances();
     },
 
-    unlockJDFIA: async function () {
+    unlockJDFIS: async function () {
       this.loading = true;
 
       try {
         let tx = await this.jdfiStakingPool.unlock({
-          value: ethers.utils.parseEther(this.inputUnlockJDFIS),
+          value: ethers.utils.parseEther(this.inputUnlockJDFIS.div(new BN(4))),
         });
         await tx.wait();
       } catch (e) {
@@ -557,10 +556,6 @@ export default {
       this.loading = false;
 
       await this.getBalances();
-    },
-
-    requiredETHUnlock: function () {
-      return this.balanceJDFIA.div(new BN(4));
     },
 
     formatBalance: function (bn, decimals = 2) {
