@@ -34,6 +34,8 @@
 
       <p>Welcome to the JusDeFi Staking Dashboard.  Earn rewards on staked JDFI or Uniswap liquidity tokens, and vote on protocol adjustments.  See our staking guide for more information.</p>
 
+      <p>JDFI is available on <a href="https://app.uniswap.org/#/swap?outputCurrency=0x75cdc4f6be18dc003dc2ae424f85d1243f0fb781">Uniswap</a>.</p>
+
       <!-- <br>
 
       <div class="columns">
