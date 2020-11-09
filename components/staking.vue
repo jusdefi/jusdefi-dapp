@@ -368,6 +368,7 @@ export default {
       balanceETH: new BN(0),
       balanceJDFI: new BN(0),
       balanceJDFIS: new BN(0),
+      balanceJDFISLocked: new BN(0),
       balanceJDFIA: new BN(0),
       balanceUNIV2: new BN(0),
       balanceUNIV2S: new BN(0),
