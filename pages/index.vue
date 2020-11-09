@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Layout from '../components/liquidity_event.vue';
+import Layout from '../components/staking.vue';
 
 export default {
   components: { Layout },
