@@ -22,7 +22,7 @@ export default function () {
       },
 
       setAccount: function (state, payload) {
-        state.currentAccount = payload;
+        state.currentAccount = ethers.utils.getAddress(payload);
       },
 
       setProvider: function (state) {
