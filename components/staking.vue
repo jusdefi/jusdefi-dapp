@@ -135,6 +135,7 @@
           <div class="field has-addons">
             <p class="control">
               <input
+                v-model="inputStakeJDFI"
                 class="input"
                 type="number"
                 placeholder="JDFI Amount"
@@ -165,6 +166,7 @@
           <div class="field has-addons">
             <p class="control">
               <input
+                v-model="inputUnstakeJDFIS"
                 class="input"
                 type="number"
                 placeholder="JDFI Amount"
@@ -318,19 +320,15 @@ export default {
 
     '$store.getters.currentAccount': function (curr) {
       if (curr) {
-        this.getEthBalance();
+        this.getBalances();
       }
-    },
-
-    jdfiStakingPool: function () {
-      this.getJDFISBalance();
     },
   },
 
   mounted: function () {
     setInterval(function () {
-      this.timeLeftBuyback = this.formatTimeRemaining(this.deadlineBuyback);
-      this.timeLeftRebase = this.formatTimeRemaining(this.deadlineRebase);
+      // this.timeLeftBuyback = this.formatTimeRemaining(this.deadlineBuyback);
+      // this.timeLeftRebase = this.formatTimeRemaining(this.deadlineRebase);
     }.bind(this), 1000);
   },
 
@@ -341,50 +339,107 @@ export default {
       try {
         let signer = this.$store.getters.provider.getSigner();
         this.jusdefi = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
-        this.feePool = new ethers.Contract(this.feePoolAddress, FeePool, signer);
+        // this.feePool = new ethers.Contract(this.feePoolAddress, FeePool, signer);
         this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
-        this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
+        // this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
       } catch (e) {
         this.error = e.message;
       }
 
       this.loading = false;
+
+      await this.getBalances();
     },
 
-    getEthBalance: async function () {
+    getBalances: async function () {
+      this.loading = true;
+
+      let { currentAccount } = this.$store.getters;
+
+      this.balanceETH = await this.$store.getters.provider.getBalance(currentAccount);
+
+      if (this.jusdefi) {
+        this.balanceJDFI = await this.jusdefi.callStatic.balanceOf(currentAccount);
+      }
+
+      if (this.jdfiStakingPool) {
+        let totalBalance = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
+        let lockedBalance = await this.jdfiStakingPool.callStatic.lockedBalanceOf(currentAccount);
+        this.balanceJDFIS = totalBalance.sub(lockedBalance);
+      }
+
+      this.loading = false;
+    },
+
+    stakeJDFI: async function () {
       this.loading = true;
 
       try {
-        let { currentAccount } = this.$store.getters;
-        this.balanceETH = await this.$store.getters.provider.getBalance(currentAccount);
+        let tx = await this.jdfiStakingPool.stake(ethers.utils.parseEther(this.inputStakeJDFI));
+        await tx.wait();
       } catch (e) {
-        this.error = e.message;
+        if (e.data) {
+          this.error = e.data.message;
+        }
       }
 
       this.loading = false;
+
+      await this.getBalances();
     },
 
-    getJDFISBalance: async function () {
+    unstakeJDFIS: async function () {
       this.loading = true;
 
       try {
-        let { currentAccount } = this.$store.getters;
-        this.balanceJDFIS = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
-        let remaining = await this.jdfiStakingPool.callStatic.balanceOf(this.jusdefi.address);
-        this.claimedJDFIS = this.totalJDFIS.sub(remaining);
+        console.log(this.inputUnstakeJDFIS);
+        let tx = await this.jdfiStakingPool.unstake(ethers.utils.parseEther(this.inputUnstakeJDFIS));
+        await tx.wait();
       } catch (e) {
-        this.error = e.message;
+
+        if (e.data) {
+          this.error = e.data.message;
+        }
       }
 
       this.loading = false;
+
+      await this.getBalances();
     },
 
-    // TODO: functions
-    stakeJDFI: () => {},
-    unstakeJDFIS: () => {},
+    compoundJDFIS: async function () {
+      this.loading = true;
 
-    compoundJDFIS: () => {},
-    withdrawJDFIS: () => {},
+      try {
+        let tx = await this.jdfiStakingPool.compound();
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
+
+    withdrawJDFIS: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.jdfiStakingPool.withdraw();
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
 
     formatBalance: function (bn, decimals = 2) {
       return (Number((bn || new BN(0)).toString()) / 1e18).toFixed(decimals);
