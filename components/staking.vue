@@ -129,6 +129,10 @@
                 <td>Unclaimed Rewards</td>
                 <td>{{ formatBalance(rewardsJDFI) }}</td>
               </tr>
+              <tr>
+                <td>Weekly Rewards Pending</td>
+                <td>{{ formatBalance(rewardsEarnedJDFI) }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -382,12 +386,28 @@ export default {
       inputUnstakeJDFIS: '',
       inputUnlockJDFIS: '',
 
+      totalRewardsJDFI: new BN(0),
+      totalSupplyJDFIS: new BN(1),
+
       // deadlineRebase: 'TODO: Sunday',
       // timeLeftRebase: 'TODO',
       //
       // deadlineBuyback: 'TODO: Friday',
       // timeLeftBuyback: 'TODO',
     };
+  },
+
+  computed: {
+    rewardsEarnedJDFI: function () {
+      let balanceJDFIS = new BN(this.balanceJDFIS.toString());
+      let balanceJDFISLocked = new BN(this.balanceJDFISLocked.toString());
+      let totalRewardsJDFI = new BN(this.totalRewardsJDFI.toString());
+      let totalSupplyJDFIS = new BN(this.totalSupplyJDFIS.toString());
+
+      return balanceJDFIS.add(balanceJDFISLocked).mul(totalRewardsJDFI).div(
+        totalSupplyJDFIS
+      );
+    },
   },
 
   watch: {
@@ -399,6 +419,14 @@ export default {
       if (curr) {
         this.getBalances();
       }
+    },
+
+    jdfiStakingPool: async function () {
+      this.totalSupplyJDFIS = await this.jdfiStakingPool.callStatic.totalSupply();
+    },
+
+    jusdefi: async function () {
+      this.totalRewardsJDFI = await this.jusdefi.callStatic.balanceOf(this.jdfiStakingPoolAddress);
     },
   },
 
