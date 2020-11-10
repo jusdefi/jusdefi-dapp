@@ -344,13 +344,13 @@
 import { ethers } from 'ethers';
 import BN from 'bn.js';
 
-import JusDeFi from '../abi/JusDeFi.json';
-import FeePool from '../abi/FeePool.json';
-import JDFIStakingPool from '../abi/JDFIStakingPool.json';
-import UNIV2StakingPool from '../abi/UNIV2StakingPool.json';
-import AirdropToken from '../abi/AirdropToken.json';
+import JusDeFi from 'jusdefi/abi/JusDeFi.json';
+import FeePool from 'jusdefi/abi/FeePool.json';
+import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
+import UNIV2StakingPool from 'jusdefi/abi/UNIV2StakingPool.json';
+import AirdropToken from 'jusdefi/abi/AirdropToken.json';
 
-import deployments from '../data/deployments.json';
+import deployments from 'jusdefi/data/deployments.json';
 
 export default {
   data: function () {

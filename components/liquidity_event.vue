@@ -112,10 +112,10 @@
 import { ethers } from 'ethers';
 import BN from 'bn.js';
 
-import JusDeFi from '../abi/JusDeFi.json';
-import JDFIStakingPool from '../abi/JDFIStakingPool.json';
+import JusDeFi from 'jusdefi/abi/JusDeFi.json';
+import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
 
-import deployments from '../data/deployments.json';
+import deployments from 'jusdefi/data/deployments.json';
 
 export default {
   data: function () {
