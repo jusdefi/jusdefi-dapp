@@ -404,16 +404,10 @@ export default {
       let totalRewardsJDFI = new BN(this.totalRewardsJDFI.toString());
       let totalSupplyJDFIS = new BN(this.totalSupplyJDFIS.toString());
 
-      let scalar = new BN(10000);
-
-      return scalar.mul(
+      return totalRewardsJDFI.mul(
         balanceJDFIS.add(balanceJDFISLocked)
-      ).mul(
-        totalRewardsJDFI
       ).div(
         totalSupplyJDFIS
-      ).div(
-        scalar
       );
     },
   },
@@ -434,7 +428,7 @@ export default {
     },
 
     jusdefi: async function () {
-      this.totalRewardsJDFI = await this.jusdefi.callStatic.balanceOf(this.jdfiStakingPoolAddress);
+      this.totalRewardsJDFI = await this.jusdefi.callStatic.balanceOf(this.feePoolAddress);
     },
   },
 
