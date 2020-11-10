@@ -404,8 +404,16 @@ export default {
       let totalRewardsJDFI = new BN(this.totalRewardsJDFI.toString());
       let totalSupplyJDFIS = new BN(this.totalSupplyJDFIS.toString());
 
-      return balanceJDFIS.add(balanceJDFISLocked).mul(totalRewardsJDFI).div(
+      let scalar = new BN(10000);
+
+      return scalar.mul(
+        balanceJDFIS.add(balanceJDFISLocked)
+      ).mul(
+        totalRewardsJDFI
+      ).div(
         totalSupplyJDFIS
+      ).div(
+        scalar
       );
     },
   },
