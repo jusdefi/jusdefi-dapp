@@ -543,8 +543,9 @@ export default {
       this.loading = true;
 
       try {
+        let value = new BN(ethers.utils.parseEther(this.inputUnlockJDFIS).toString()).div(new BN(4));
         let tx = await this.jdfiStakingPool.unlock({
-          value: ethers.utils.parseEther(this.inputUnlockJDFIS.div(new BN(4))),
+          value: value.toString(),
         });
         await tx.wait();
       } catch (e) {
