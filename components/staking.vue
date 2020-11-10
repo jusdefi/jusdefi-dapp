@@ -359,9 +359,10 @@ import deployments from 'jusdefi/data/deployments.json';
 export default {
   data: function () {
     return {
+      airdropTokenAddress: deployments.airdropToken,
       jusdefiAddress: deployments.jusdefi,
       jdfiStakingPoolAddress: deployments.jdfiStakingPool,
-      airdropTokenAddress: deployments.airdropToken,
+      feePoolAddress: deployments.feePool,
 
       jusdefi: null,
       feePool: null,
