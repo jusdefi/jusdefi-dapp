@@ -441,6 +441,7 @@ export default {
       airdropTokenAddress: deployments.airdropToken,
       jusdefiAddress: deployments.jusdefi,
       jdfiStakingPoolAddress: deployments.jdfiStakingPool,
+      univ2StakingPoolAddress: deployments.univ2StakingPool,
       feePoolAddress: deployments.feePool,
 
       jusdefi: null,
@@ -566,7 +567,7 @@ export default {
         this.jusdefi = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
         // this.feePool = new ethers.Contract(this.feePoolAddress, FeePool, signer);
         this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
-        // this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
+        this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
         this.airdropToken = new ethers.Contract(this.airdropTokenAddress, AirdropToken, signer);
         this.uniswapPair = new ethers.Contract(this.uniswapPairAddress, IUniswapV2Pair, signer);
       } catch (e) {
