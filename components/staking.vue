@@ -133,6 +133,10 @@
                 <td>Weekly Rewards Pending</td>
                 <td>{{ formatBalance(rewardsEarnedJDFI) }}</td>
               </tr>
+              <tr>
+                <td>Weekly APY (extrapolated)</td>
+                <td>~{{ apyJDFI }}%</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -259,6 +263,10 @@
                 <td>Unclaimed Rewards</td>
                 <td>{{ formatBalance(rewardsUNIV2) }}</td>
               </tr>
+              <tr>
+                <td>Weekly APY (extrapolated)</td>
+                <td>~{{ apyUNIV2 }}%</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -345,20 +353,21 @@
 </template>
 
 <script>
-import { ethers } from 'ethers';
-import BN from 'bn.js';
+import { ethers, BigNumber } from 'ethers';
 
 import JusDeFi from 'jusdefi/abi/JusDeFi.json';
 import FeePool from 'jusdefi/abi/FeePool.json';
 import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
 import UNIV2StakingPool from 'jusdefi/abi/UNIV2StakingPool.json';
 import AirdropToken from 'jusdefi/abi/AirdropToken.json';
+import IUniswapV2Pair from 'jusdefi/abi/IUniswapV2Pair.json';
 
 import deployments from 'jusdefi/data/deployments.json';
 
 export default {
   data: function () {
     return {
+      uniswapPairAddress: deployments.uniswapPair,
       airdropTokenAddress: deployments.airdropToken,
       jusdefiAddress: deployments.jusdefi,
       jdfiStakingPoolAddress: deployments.jdfiStakingPool,
@@ -368,27 +377,32 @@ export default {
       feePool: null,
       jdfiStakingPool: null,
       univ2StakingPool: null,
+      uniswapPair: null,
 
       loading: false,
       error: null,
 
-      balanceETH: new BN(0),
-      balanceJDFI: new BN(0),
-      balanceJDFIS: new BN(0),
-      balanceJDFISLocked: new BN(0),
-      balanceJDFIA: new BN(0),
-      balanceUNIV2: new BN(0),
-      balanceUNIV2S: new BN(0),
+      balanceETH: BigNumber.from(0),
+      balanceJDFI: BigNumber.from(0),
+      balanceJDFIS: BigNumber.from(0),
+      balanceJDFISLocked: BigNumber.from(0),
+      balanceJDFIA: BigNumber.from(0),
+      balanceUNIV2: BigNumber.from(0),
+      balanceUNIV2S: BigNumber.from(0),
 
-      rewardsJDFI: new BN(0),
-      rewardsUNIV2: new BN(0),
+      rewardsJDFI: BigNumber.from(0),
+      rewardsUNIV2: BigNumber.from(0),
 
       inputStakeJDFI: '',
       inputUnstakeJDFIS: '',
       inputUnlockJDFIS: '',
 
-      totalRewardsJDFI: new BN(0),
-      totalSupplyJDFIS: new BN(1),
+      totalRewards: BigNumber.from(0),
+      tokensInJDFIStakingPool: BigNumber.from(1),
+
+      balanceOfUniswapPair: BigNumber.from(0),
+      totalSupplyUNIV2: BigNumber.from(1),
+      stakedUNIV2: BigNumber.from(0),
 
       // deadlineRebase: 'TODO: Sunday',
       // timeLeftRebase: 'TODO',
@@ -400,15 +414,40 @@ export default {
 
   computed: {
     rewardsEarnedJDFI: function () {
-      let balanceJDFIS = new BN(this.balanceJDFIS.toString());
-      let balanceJDFISLocked = new BN(this.balanceJDFISLocked.toString());
-      let totalRewardsJDFI = new BN(this.totalRewardsJDFI.toString());
-      let totalSupplyJDFIS = new BN(this.totalSupplyJDFIS.toString());
-
-      return totalRewardsJDFI.mul(
-        balanceJDFIS.add(balanceJDFISLocked)
+      return this.totalRewards.mul(
+        this.balanceJDFIS.add(this.balanceJDFISLocked)
       ).div(
-        totalSupplyJDFIS
+        this.tokensInJDFIStakingPool
+      );
+    },
+
+    tokensInUNIV2StakingPool: function () {
+      return this.balanceOfUniswapPair.mul(this.stakedUNIV2).div(this.totalSupplyUNIV2);
+    },
+
+    apyJDFI: function () {
+      let denominator = this.tokensInJDFIStakingPool.add(this.tokensInUNIV2StakingPool.mul(BigNumber.from(3)));
+      let rewards = this.totalRewards.mul(this.tokensInJDFIStakingPool).div(denominator);
+
+      let day = new Date().getUTCDay();
+
+      return BigNumber.from(100).mul(rewards).mul(BigNumber.from(365)).div(
+        BigNumber.from(day + 1)
+      ).div(
+        this.tokensInJDFIStakingPool
+      );
+    },
+
+    apyUNIV2: function () {
+      let denominator = this.tokensInJDFIStakingPool.add(this.tokensInUNIV2StakingPool.mul(BigNumber.from(3)));
+      let rewards = this.totalRewards.mul(this.tokensInUNIV2StakingPool).mul(BigNumber.from(3)).div(BigNumber.from(2)).div(denominator);
+
+      let day = new Date().getUTCDay();
+
+      return BigNumber.from(100).mul(rewards).mul(BigNumber.from(365)).div(
+        BigNumber.from(day + 1)
+      ).div(
+        this.tokensInUNIV2StakingPool.add(BigNumber.from(1))
       );
     },
   },
@@ -424,12 +463,15 @@ export default {
       }
     },
 
-    jdfiStakingPool: async function () {
-      this.totalSupplyJDFIS = await this.jdfiStakingPool.callStatic.totalSupply();
+    jusdefi: async function () {
+      this.totalRewards = await this.jusdefi.callStatic.balanceOf(this.feePoolAddress);
+      this.tokensInJDFIStakingPool = await this.jusdefi.callStatic.balanceOf(this.jdfiStakingPoolAddress);
+      this.balanceOfUniswapPair = await this.jusdefi.callStatic.balanceOf(this.uniswapPairAddress);
     },
 
-    jusdefi: async function () {
-      this.totalRewardsJDFI = await this.jusdefi.callStatic.balanceOf(this.feePoolAddress);
+    uniswapPair: async function () {
+      this.totalSupplyUNIV2 = await this.uniswapPair.callStatic.totalSupply();
+      this.stakedUNIV2 = await this.uniswapPair.callStatic.balanceOf(this.univ2StakingPoolAddress);
     },
   },
 
@@ -451,6 +493,7 @@ export default {
         this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
         // this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
         this.airdropToken = new ethers.Contract(this.airdropTokenAddress, AirdropToken, signer);
+        this.uniswapPair = new ethers.Contract(this.uniswapPairAddress, IUniswapV2Pair, signer);
       } catch (e) {
         this.error = e.message;
       }
@@ -574,9 +617,8 @@ export default {
       this.loading = true;
 
       try {
-        let value = new BN(ethers.utils.parseEther(this.inputUnlockJDFIS).toString()).div(new BN(4));
         let tx = await this.jdfiStakingPool.unlock({
-          value: value.toString(),
+          value: ethers.utils.parseEther(this.inputUnlockJDFIS).div(BigNumber.from(4)),
         });
         await tx.wait();
       } catch (e) {
@@ -603,7 +645,7 @@ export default {
     },
 
     formatBalance: function (bn, decimals = 2) {
-      return (Number((bn || new BN(0)).toString()) / 1e18).toFixed(decimals);
+      return (Number((bn || BigNumber.from(0)).toString()) / 1e18).toFixed(decimals);
     },
 
     formatTimeRemaining: function (target) {
