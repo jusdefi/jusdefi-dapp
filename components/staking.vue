@@ -122,7 +122,7 @@
                 <td>{{ formatBalance(balanceJDFI) }}</td>
               </tr>
               <tr>
-                <td>JDFI/S Balance</td>
+                <td>Staked JDFI Balance</td>
                 <td>{{ formatBalance(balanceJDFIS) }}</td>
               </tr>
               <tr>
@@ -283,7 +283,7 @@
                 <td>{{ formatBalance(balanceJDFIA) }}</td>
               </tr>
               <tr>
-                <td>Locked JDFI/S Balance</td>
+                <td>Locked Staked JDFI Balance</td>
                 <td>{{ formatBalance(balanceJDFISLocked) }}</td>
               </tr>
             </tbody>
