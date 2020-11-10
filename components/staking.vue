@@ -234,7 +234,7 @@
       <div class="level">
         <div class="level-left">
           <h2 class="subtitle has-text-dark">
-            Stake JDFI/WETH UNI-V2
+            Stake UNI-V2
           </h2>
         </div>
       </div>
@@ -252,11 +252,11 @@
                 <td>{{ formatBalance(balanceJDFI) }}</td>
               </tr> -->
               <tr>
-                <td>JDFI/WETH UNI-V2 Balance</td>
+                <td>UNI-V2 Balance</td>
                 <td>{{ formatBalance(balanceUNIV2) }}</td>
               </tr>
               <tr>
-                <td>JDFI-WETH-UNI-V2/S Balance</td>
+                <td>Staked UNI-V2 Balance</td>
                 <td>{{ formatBalance(balanceUNIV2S) }}</td>
               </tr>
               <tr>
@@ -272,7 +272,77 @@
         </div>
 
         <div class="column">
-          <p>Coming Soon!</p>
+          <div class="field has-addons">
+            <p class="control">
+              <input
+                v-model="inputStakeUNIV2"
+                class="input"
+                type="text"
+                placeholder="UNI-V2 Amount"
+              >
+            </p>
+            <p class="control">
+              <button
+                type="button"
+                class="button is-info"
+                :disabled="!$store.getters.connected || balanceUNIV2.isZero()"
+                @click="setMaxStakeUNIV2()"
+              >
+                max
+              </button>
+            </p>
+            <p class="control is-expanded">
+              <button
+                v-show="approvedUNIV2.gte(balanceUNIV2)"
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="!$store.getters.connected || balanceUNIV2.isZero()"
+                @click="stakeUNIV2()"
+              >
+                Stake UNI-V2
+              </button>
+              <button
+                v-show="approvedUNIV2.lt(balanceUNIV2)"
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="!$store.getters.connected || balanceUNIV2.isZero()"
+                @click="approveUNIV2()"
+              >
+                Approve UNI-V2
+              </button>
+            </p>
+          </div>
+
+          <div class="field has-addons">
+            <p class="control">
+              <input
+                v-model="inputUnstakeUNIV2"
+                class="input"
+                type="number"
+                placeholder="JDFI-WETH-UNI-V2/S Amount"
+              >
+            </p>
+            <p class="control">
+              <button
+                type="button"
+                class="button is-info"
+                :disabled="!$store.getters.connected || balanceUNIV2S.isZero()"
+                @click="setMaxUnstakeUNIV2()"
+              >
+                max
+              </button>
+            </p>
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="!$store.getters.connected || balanceUNIV2S.isZero()"
+                @click="unstakeJDFIS()"
+              >
+                Unstake UNI-V2
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -395,6 +465,8 @@ export default {
 
       inputStakeJDFI: '',
       inputUnstakeJDFIS: '',
+      inputStakeUNIV2: '',
+      inputUnstakeUNIV2: '',
       inputUnlockJDFIS: '',
 
       totalRewards: BigNumber.from(0),
@@ -403,6 +475,8 @@ export default {
       balanceOfUniswapPair: BigNumber.from(0),
       totalSupplyUNIV2: BigNumber.from(1),
       stakedUNIV2: BigNumber.from(0),
+
+      approvedUNIV2: BigNumber.from(0),
 
       // deadlineRebase: 'TODO: Sunday',
       // timeLeftRebase: 'TODO',
@@ -472,6 +546,7 @@ export default {
     uniswapPair: async function () {
       this.totalSupplyUNIV2 = await this.uniswapPair.callStatic.totalSupply();
       this.stakedUNIV2 = await this.uniswapPair.callStatic.balanceOf(this.univ2StakingPoolAddress);
+      this.approvedUNIV2 = await this.uniswapPair.callStatic.allowance(this.$store.getters.currentAccount, this.univ2StakingPoolAddress);
     },
   },
 
@@ -596,6 +671,36 @@ export default {
       await this.getBalances();
     },
 
+    approveUNIV2: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.uniswapPair.approve(this.univ2StakingPoolAddress, ethers.constants.MaxUint256);
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+    },
+
+    stakeUNIV2: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.univ2StakingPool['stake(uint256)'](ethers.utils.parseEther(this.inputStakeUNIV2));
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+    },
+
     convertJDFIA: async function () {
       this.loading = true;
 
@@ -638,6 +743,14 @@ export default {
 
     setMaxUnstakeJDFIS: function () {
       this.inputUnstakeJDFIS = ethers.utils.formatEther(this.balanceJDFIS);
+    },
+
+    setMaxStakeUNIV2: function () {
+      this.inputStakeUNIV2 = ethers.utils.formatEther(this.balanceUNIV2);
+    },
+
+    setMaxUnstakeUNIV2: function () {
+      this.inputUnstakeUNIV2 = ethers.utils.formatEther(this.balanceUNIV2S);
     },
 
     setMaxUnlockJDFIS: function () {
