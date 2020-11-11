@@ -113,7 +113,22 @@
         </div>
 
         <div class="level-right">
-          ~{{ apyJDFI }}% APY
+          <div class="level-item">
+            ~{{ apyJDFI }}% APY
+          </div>
+
+          <div class="level-item">
+            <div class="level-item">
+              <a
+                :href="`https://etherscan.io/address/${ jdfiStakingPoolAddress }`"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="has-text-dark"
+              >
+                <open-in-new-icon title="Open on Etherscan" />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -243,7 +258,20 @@
         </div>
 
         <div class="level-right">
-          ~{{ apyUNIV2 }}% APY
+          <div class="level-item">
+            ~{{ apyUNIV2 }}% APY
+          </div>
+
+          <div class="level-item">
+            <a
+              :href="`https://etherscan.io/address/${ univ2StakingPoolAddress }`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="has-text-dark"
+            >
+              <open-in-new-icon title="Open on Etherscan" />
+            </a>
+          </div>
         </div>
       </div>
 
@@ -389,6 +417,19 @@
             Convert JDFI/A to locked JDFI/S
           </h2>
         </div>
+
+        <div class="level-right">
+          <div class="level-item">
+            <a
+              :href="`https://etherscan.io/address/${ airdropTokenAddress }`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="has-text-dark"
+            >
+              <open-in-new-icon title="Open on Etherscan" />
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="columns">
@@ -463,6 +504,7 @@
 import { ethers, BigNumber } from 'ethers';
 
 import FormatVerticalAlignTopIcon from 'vue-material-design-icons/FormatVerticalAlignTop.vue';
+import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue';
 
 import JusDeFi from 'jusdefi/abi/JusDeFi.json';
 import FeePool from 'jusdefi/abi/FeePool.json';
@@ -474,7 +516,7 @@ import IUniswapV2Pair from 'jusdefi/abi/IUniswapV2Pair.json';
 import deployments from 'jusdefi/data/deployments.json';
 
 export default {
-  components: { FormatVerticalAlignTopIcon },
+  components: { FormatVerticalAlignTopIcon, OpenInNewIcon },
 
   data: function () {
     return {
