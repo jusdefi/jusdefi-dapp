@@ -104,7 +104,10 @@
       </div> -->
     </div>
 
-    <div class="box">
+    <div
+      class="box"
+      :class="{ 'is-loading': loading, 'is-not-loaded': !loaded }"
+    >
       <div class="level">
         <div class="level-left">
           <h2 class="subtitle has-text-dark">
@@ -118,16 +121,14 @@
           </div>
 
           <div class="level-item">
-            <div class="level-item">
-              <a
-                :href="`https://etherscan.io/address/${ jdfiStakingPoolAddress }`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="has-text-dark"
-              >
-                <open-in-new-icon title="Open on Etherscan" />
-              </a>
-            </div>
+            <a
+              :href="`https://etherscan.io/address/${ jdfiStakingPoolAddress }`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="has-text-dark"
+            >
+              <open-in-new-icon title="Open on Etherscan" />
+            </a>
           </div>
         </div>
       </div>
@@ -253,7 +254,10 @@
       </div>
     </div>
 
-    <div class="box">
+    <div
+      class="box"
+      :class="{ 'is-loading': loading, 'is-not-loaded': !loaded }"
+    >
       <div class="level">
         <div class="level-left">
           <h2 class="subtitle has-text-dark">
@@ -418,7 +422,10 @@
       </div>
     </div>
 
-    <div class="box">
+    <div
+      class="box"
+      :class="{ 'is-loading': loading, 'is-not-loaded': !loaded }"
+    >
       <div class="level">
         <div class="level-left">
           <h2 class="subtitle has-text-dark">
@@ -546,6 +553,7 @@ export default {
       uniswapPair: null,
 
       loading: false,
+      loaded: false,
       error: null,
 
       balanceETH: BigNumber.from(0),
@@ -640,6 +648,8 @@ export default {
     '$store.getters.currentAccount': function (curr) {
       if (curr) {
         this.getBalances();
+      } else {
+        this.loaded = false;
       }
     },
 
@@ -716,6 +726,7 @@ export default {
       }
 
       this.loading = false;
+      this.loaded = true;
     },
 
     stakeJDFI: async function () {
@@ -725,9 +736,7 @@ export default {
         let tx = await this.jdfiStakingPool.stake(ethers.utils.parseEther(this.inputStakeJDFI));
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -743,9 +752,7 @@ export default {
         await tx.wait();
       } catch (e) {
 
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -760,9 +767,7 @@ export default {
         let tx = await this.jdfiStakingPool.compound();
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -777,9 +782,7 @@ export default {
         let tx = await this.jdfiStakingPool.withdraw();
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -794,9 +797,7 @@ export default {
         let tx = await this.univ2StakingPool.withdraw();
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -811,9 +812,7 @@ export default {
         let tx = await this.uniswapPair.approve(this.univ2StakingPoolAddress, ethers.constants.MaxUint256);
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -826,9 +825,7 @@ export default {
         let tx = await this.univ2StakingPool['stake(uint256)'](ethers.utils.parseEther(this.inputStakeUNIV2));
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -841,9 +838,7 @@ export default {
         let tx = await this.airdropToken.exchange();
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
@@ -860,9 +855,7 @@ export default {
         });
         await tx.wait();
       } catch (e) {
-        if (e.data) {
-          this.error = e.data.message;
-        }
+        this.error = e.data && e.data.message;
       }
 
       this.loading = false;
