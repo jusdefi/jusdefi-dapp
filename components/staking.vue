@@ -111,6 +111,10 @@
             Stake JDFI
           </h2>
         </div>
+
+        <div class="level-right">
+          ~{{ apyJDFI }}% APY
+        </div>
       </div>
 
       <div class="columns">
@@ -132,10 +136,6 @@
               <tr>
                 <td>Weekly Rewards Pending</td>
                 <td>{{ formatBalance(rewardsWeeklyJDFI) }}</td>
-              </tr>
-              <tr>
-                <td>Weekly APY (extrapolated)</td>
-                <td>~{{ apyJDFI }}%</td>
               </tr>
             </tbody>
           </table>
@@ -241,6 +241,10 @@
             Stake UNI-V2
           </h2>
         </div>
+
+        <div class="level-right">
+          ~{{ apyUNIV2 }}% APY
+        </div>
       </div>
 
       <div class="columns">
@@ -270,10 +274,6 @@
               <tr>
                 <td>Weekly Rewards Pending</td>
                 <td>{{ formatBalance(rewardsWeeklyUNIV2) }}</td>
-              </tr>
-              <tr>
-                <td>Weekly APY (extrapolated)</td>
-                <td>~{{ apyUNIV2 }}%</td>
               </tr>
             </tbody>
           </table>
