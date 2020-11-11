@@ -347,6 +347,29 @@
               </button>
             </p>
           </div>
+
+          <div class="field is-grouped">
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="rewardsUNIV2.isZero()"
+                @click="withdrawUNIV2S()"
+              >
+                Withdraw
+              </button>
+            </p>
+            <!-- <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="rewardsJDFI.isZero()"
+                @click="compoundJDFIS()"
+              >
+                Compound
+              </button>
+            </p> -->
+          </div>
         </div>
       </div>
     </div>
@@ -684,6 +707,23 @@ export default {
 
       try {
         let tx = await this.jdfiStakingPool.withdraw();
+        await tx.wait();
+      } catch (e) {
+        if (e.data) {
+          this.error = e.data.message;
+        }
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
+
+    withdrawUNIV2S: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.univ2StakingPool.withdraw();
         await tx.wait();
       } catch (e) {
         if (e.data) {
