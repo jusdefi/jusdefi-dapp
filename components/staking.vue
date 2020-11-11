@@ -132,6 +132,10 @@
         </div>
       </div>
 
+      <p>Stake JDFI to earn weekly rewards.</p>
+
+      <br>
+
       <div class="columns">
         <div class="column">
           <table class="table">
@@ -274,6 +278,10 @@
           </div>
         </div>
       </div>
+
+      <p>Add JDFI/ETH liquidity on Uniswap, then stake the received UNI-V2 tokens.</p>
+
+      <br>
 
       <div class="columns">
         <div class="column">
@@ -431,6 +439,10 @@
           </div>
         </div>
       </div>
+
+      <p>Airdrop recipients must convert JDFI/A to JDFI/S in order to begin earning rewards.  This JDFI/S cannot be unstaked unless unlocked with a fee of 0.25 ETH per token.</p>
+
+      <br>
 
       <div class="columns">
         <div class="column">
