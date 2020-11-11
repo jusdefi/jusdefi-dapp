@@ -11,3 +11,9 @@ $family-sans-serif: 'Ubuntu';
 $weight-semibold: 700;
 
 @import '~bulma';
+
+button .material-design-icon {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+}

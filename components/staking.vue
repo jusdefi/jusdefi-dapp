@@ -158,7 +158,9 @@
                 :disabled="!$store.getters.connected || balanceJDFI.isZero()"
                 @click="setMaxStakeJDFI()"
               >
-                max
+                <format-vertical-align-top-icon
+                  title="Input maximum available"
+                />
               </button>
             </p>
             <p class="control is-expanded">
@@ -189,7 +191,9 @@
                 :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
                 @click="setMaxUnstakeJDFIS()"
               >
-                max
+                <format-vertical-align-top-icon
+                  title="Input maximum available"
+                />
               </button>
             </p>
             <p class="control is-expanded">
@@ -292,7 +296,9 @@
                 :disabled="!$store.getters.connected || balanceUNIV2.isZero()"
                 @click="setMaxStakeUNIV2()"
               >
-                max
+                <format-vertical-align-top-icon
+                  title="Input maximum available"
+                />
               </button>
             </p>
             <p class="control is-expanded">
@@ -333,7 +339,9 @@
                 :disabled="!$store.getters.connected || balanceUNIV2S.isZero()"
                 @click="setMaxUnstakeUNIV2()"
               >
-                max
+                <format-vertical-align-top-icon
+                  title="Input maximum available"
+                />
               </button>
             </p>
             <p class="control is-expanded">
@@ -429,7 +437,9 @@
                 :disabled="!$store.getters.connected || balanceJDFISLocked.isZero()"
                 @click="setMaxUnlockJDFIS()"
               >
-                max
+                <format-vertical-align-top-icon
+                  title="Input maximum available"
+                />
               </button>
             </p>
             <p class="control">
@@ -452,6 +462,8 @@
 <script>
 import { ethers, BigNumber } from 'ethers';
 
+import FormatVerticalAlignTopIcon from 'vue-material-design-icons/FormatVerticalAlignTop.vue';
+
 import JusDeFi from 'jusdefi/abi/JusDeFi.json';
 import FeePool from 'jusdefi/abi/FeePool.json';
 import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
@@ -462,6 +474,8 @@ import IUniswapV2Pair from 'jusdefi/abi/IUniswapV2Pair.json';
 import deployments from 'jusdefi/data/deployments.json';
 
 export default {
+  components: { FormatVerticalAlignTopIcon },
+
   data: function () {
     return {
       uniswapPairAddress: deployments.uniswapPair,
