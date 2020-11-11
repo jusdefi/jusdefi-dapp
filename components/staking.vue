@@ -131,7 +131,7 @@
               </tr>
               <tr>
                 <td>Weekly Rewards Pending</td>
-                <td>{{ formatBalance(rewardsEarnedJDFI) }}</td>
+                <td>{{ formatBalance(rewardsWeeklyJDFI) }}</td>
               </tr>
               <tr>
                 <td>Weekly APY (extrapolated)</td>
@@ -262,6 +262,10 @@
               <tr>
                 <td>Unclaimed Rewards</td>
                 <td>{{ formatBalance(rewardsUNIV2) }}</td>
+              </tr>
+              <tr>
+                <td>Weekly Rewards Pending</td>
+                <td>{{ formatBalance(rewardsWeeklyUNIV2) }}</td>
               </tr>
               <tr>
                 <td>Weekly APY (extrapolated)</td>
@@ -488,11 +492,21 @@ export default {
   },
 
   computed: {
-    rewardsEarnedJDFI: function () {
+    rewardsWeeklyJDFI: function () {
       return this.totalRewards.mul(
         this.balanceJDFIS.add(this.balanceJDFISLocked)
       ).div(
         this.tokensInJDFIStakingPool
+      );
+    },
+
+    rewardsWeeklyUNIV2: function () {
+      return this.totalRewards.mul(
+        this.tokensInUNIV2StakingPool
+      ).mul(
+        this.balanceUNIV2S
+      ).div(
+        this.totalSupplyUNIV2
       );
     },
 
@@ -594,6 +608,7 @@ export default {
         let totalBalance = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
         this.balanceJDFISLocked = await this.jdfiStakingPool.callStatic.lockedBalanceOf(currentAccount);
         this.balanceJDFIS = totalBalance.sub(this.balanceJDFISLocked);
+        this.rewardsJDFI = await this.jdfiStakingPool.callStatic.rewardsOf(currentAccount);
       }
 
       if (this.uniswapPair) {
@@ -602,6 +617,7 @@ export default {
 
       if (this.univ2StakingPool) {
         this.balanceUNIV2S = await this.univ2StakingPool.callStatic.balanceOf(currentAccount);
+        this.rewardsUNIV2 = await this.univ2StakingPool.callStatic.rewardsOf(currentAccount);
       }
 
       if (this.airdropToken) {
