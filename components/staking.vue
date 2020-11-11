@@ -596,6 +596,14 @@ export default {
         this.balanceJDFIS = totalBalance.sub(this.balanceJDFISLocked);
       }
 
+      if (this.uniswapPair) {
+        this.balanceUNIV2 = await this.uniswapPair.callStatic.balanceOf(currentAccount);
+      }
+
+      if (this.univ2StakingPool) {
+        this.balanceUNIV2S = await this.univ2StakingPool.callStatic.balanceOf(currentAccount);
+      }
+
       if (this.airdropToken) {
         this.balanceJDFIA = await this.airdropToken.callStatic.balanceOf(currentAccount);
       }
