@@ -785,7 +785,7 @@ export default {
         );
         await tx.wait();
       } catch (e) {
-
+        console.log(e);
         this.error = e.data && e.data.message;
       }
 
