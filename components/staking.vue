@@ -573,10 +573,10 @@ export default {
       inputUnstakeUNIV2: '',
       inputUnlockJDFIS: '',
 
-      totalRewards: BigNumber.from(0),
-      tokensInJDFIStakingPool: BigNumber.from(1),
+      balanceFeePoolJDFI: BigNumber.from(0),
+      balanceJDFIStakingPoolJDFI: BigNumber.from(1),
 
-      balanceOfUniswapPair: BigNumber.from(0),
+      balanceOfUniswapPairJDFI: BigNumber.from(0),
       totalSupplyUNIV2: BigNumber.from(1),
       stakedUNIV2: BigNumber.from(0),
 
@@ -591,51 +591,51 @@ export default {
   },
 
   computed: {
-    rewardsWeeklyJDFI: function () {
-      return this.totalRewards.mul(
-        this.balanceJDFIS.add(this.balanceJDFISLocked)
-      ).div(
-        this.tokensInJDFIStakingPool
+    totalRewardShares: function () {
+      let shares = this.balanceJDFIStakingPoolJDFI.add(
+        this.balanceUNIV2StakingPoolJDFI.mul(BigNumber.from(3))
       );
+
+      return shares.isZero() ? BigNumber.from(1) : shares;
+    },
+
+    rewardsWeeklyJDFI: function () {
+      let shares = this.balanceJDFIS.add(this.balanceJDFISLocked);
+      return shares.mul(this.balanceFeePoolJDFI).div(this.totalRewardShares);
     },
 
     rewardsWeeklyUNIV2: function () {
-      return this.totalRewards.mul(
-        this.tokensInUNIV2StakingPool
-      ).mul(
-        this.balanceUNIV2S
-      ).div(
-        this.totalSupplyUNIV2
-      );
+      let shares = this.balanceUNIV2S.mul(BigNumber.from(3)).mul(this.balanceOfUniswapPairJDFI).div(this.totalSupplyUNIV2);
+      return shares.mul(this.balanceFeePoolJDFI).div(this.totalRewardShares);
     },
 
-    tokensInUNIV2StakingPool: function () {
-      return this.balanceOfUniswapPair.mul(this.stakedUNIV2).div(this.totalSupplyUNIV2);
+    balanceUNIV2StakingPoolJDFI: function () {
+      return this.balanceOfUniswapPairJDFI.mul(this.stakedUNIV2).div(this.totalSupplyUNIV2);
     },
 
     apyJDFI: function () {
-      let denominator = this.tokensInJDFIStakingPool.add(this.tokensInUNIV2StakingPool.mul(BigNumber.from(3)));
-      let rewards = this.totalRewards.mul(this.tokensInJDFIStakingPool).div(denominator);
+      let denominator = this.balanceJDFIStakingPoolJDFI.add(this.balanceUNIV2StakingPoolJDFI.mul(BigNumber.from(3)));
+      let rewards = this.balanceFeePoolJDFI.mul(this.balanceJDFIStakingPoolJDFI).div(denominator);
 
       let day = new Date().getUTCDay();
 
       return BigNumber.from(100).mul(rewards).mul(BigNumber.from(365)).div(
         BigNumber.from(day + 1)
       ).div(
-        this.tokensInJDFIStakingPool
+        this.balanceJDFIStakingPoolJDFI
       );
     },
 
     apyUNIV2: function () {
-      let denominator = this.tokensInJDFIStakingPool.add(this.tokensInUNIV2StakingPool.mul(BigNumber.from(3)));
-      let rewards = this.totalRewards.mul(this.tokensInUNIV2StakingPool).mul(BigNumber.from(3)).div(BigNumber.from(2)).div(denominator);
+      let denominator = this.balanceJDFIStakingPoolJDFI.add(this.balanceUNIV2StakingPoolJDFI.mul(BigNumber.from(3)));
+      let rewards = this.balanceFeePoolJDFI.mul(this.balanceUNIV2StakingPoolJDFI).mul(BigNumber.from(3)).div(BigNumber.from(2)).div(denominator);
 
       let day = new Date().getUTCDay();
 
       return BigNumber.from(100).mul(rewards).mul(BigNumber.from(365)).div(
         BigNumber.from(day + 1)
       ).div(
-        this.tokensInUNIV2StakingPool.add(BigNumber.from(1))
+        this.balanceUNIV2StakingPoolJDFI.add(BigNumber.from(1))
       );
     },
   },
@@ -654,9 +654,9 @@ export default {
     },
 
     jusdefi: async function () {
-      this.totalRewards = await this.jusdefi.callStatic.balanceOf(this.feePoolAddress);
-      this.tokensInJDFIStakingPool = await this.jusdefi.callStatic.balanceOf(this.jdfiStakingPoolAddress);
-      this.balanceOfUniswapPair = await this.jusdefi.callStatic.balanceOf(this.uniswapPairAddress);
+      this.balanceFeePoolJDFI = await this.jusdefi.callStatic.balanceOf(this.feePoolAddress);
+      this.balanceJDFIStakingPoolJDFI = await this.jusdefi.callStatic.balanceOf(this.jdfiStakingPoolAddress);
+      this.balanceOfUniswapPairJDFI = await this.jusdefi.callStatic.balanceOf(this.uniswapPairAddress);
     },
 
     uniswapPair: async function () {
