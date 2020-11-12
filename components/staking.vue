@@ -283,7 +283,11 @@
         </div>
       </div>
 
-      <p>Add JDFI/ETH liquidity on Uniswap, then stake the received UNI-V2 tokens.</p>
+      <p>
+        Add JDFI/ETH liquidity on <a href="https://app.uniswap.org/#/add/0x75cdc4f6be18dc003dc2ae424f85d1243f0fb781/ETH" target="_blank"
+                                     rel="noopener noreferrer"
+        >Uniswap</a>, then stake the received UNI-V2 tokens.
+      </p>
 
       <br>
 
