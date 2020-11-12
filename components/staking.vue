@@ -773,7 +773,7 @@ export default {
 
       try {
         let amount = ethers.utils.parseEther(this.inputUnstakeUNIV2S);
-        let total = await this.univ2StakingPool.callStatic.totalSupply();
+        let total = await this.uniswapPair.callStatic.totalSupply();
 
         let liquidityJDFI = await this.jusdefi.callStatic.balanceOf(this.uniswapPairAddress);
         let liquidityWETH = await this.weth.callStatic.balanceOf(this.uniswapPairAddress);
