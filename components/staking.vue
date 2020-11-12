@@ -778,14 +778,13 @@ export default {
         let liquidityJDFI = await this.jusdefi.callStatic.balanceOf(this.uniswapPairAddress);
         let liquidityWETH = await this.weth.callStatic.balanceOf(this.uniswapPairAddress);
 
-        let tx = await this.jdfiStakingPool.unstake(
+        let tx = await this.univ2StakingPool.unstake(
           amount,
           liquidityJDFI.mul(amount).div(total).mul(BigNumber.from(99)).div(BigNumber.from(100)),
           liquidityWETH.mul(amount).div(total).mul(BigNumber.from(99)).div(BigNumber.from(100))
         );
         await tx.wait();
       } catch (e) {
-        console.log(e);
         this.error = e.data && e.data.message;
       }
 
