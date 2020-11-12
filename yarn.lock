@@ -5478,7 +5478,7 @@ jsprim@^1.2.2:
 
 "jusdefi@https://github.com/jusdefi/jusdefi":
   version "0.0.0"
-  resolved "https://github.com/jusdefi/jusdefi#46b0b8f6ec4840497a2acdf928902dd4d820ecf7"
+  resolved "https://github.com/jusdefi/jusdefi#c5e77c4d9e588bc8e1f61b9b9343919d7cd620db"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"

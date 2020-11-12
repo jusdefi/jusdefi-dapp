@@ -370,7 +370,7 @@
           <div class="field has-addons">
             <p class="control">
               <input
-                v-model="inputUnstakeUNIV2"
+                v-model="inputUnstakeUNIV2S"
                 class="input"
                 type="number"
                 placeholder="JDFI-WETH-UNI-V2/S Amount"
@@ -393,7 +393,7 @@
                 type="button"
                 class="button is-fullwidth is-info"
                 :disabled="!$store.getters.connected || balanceUNIV2S.isZero()"
-                @click="unstakeJDFIS()"
+                @click="unstakeUNIV2S()"
               >
                 Unstake UNI-V2
               </button>
@@ -535,6 +535,7 @@ import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
 import UNIV2StakingPool from 'jusdefi/abi/UNIV2StakingPool.json';
 import AirdropToken from 'jusdefi/abi/AirdropToken.json';
 import IUniswapV2Pair from 'jusdefi/abi/IUniswapV2Pair.json';
+import IERC20 from 'jusdefi/abi/IERC20.json';
 
 import deployments from 'jusdefi/data/deployments.json';
 
@@ -543,18 +544,20 @@ export default {
 
   data: function () {
     return {
-      uniswapPairAddress: deployments.uniswapPair,
       airdropTokenAddress: deployments.airdropToken,
-      jusdefiAddress: deployments.jusdefi,
-      jdfiStakingPoolAddress: deployments.jdfiStakingPool,
-      univ2StakingPoolAddress: deployments.univ2StakingPool,
       feePoolAddress: deployments.feePool,
+      jdfiStakingPoolAddress: deployments.jdfiStakingPool,
+      jusdefiAddress: deployments.jusdefi,
+      uniswapPairAddress: deployments.uniswapPair,
+      univ2StakingPoolAddress: deployments.univ2StakingPool,
+      wethAddress: deployments.weth,
 
-      jusdefi: null,
       feePool: null,
       jdfiStakingPool: null,
-      univ2StakingPool: null,
+      jusdefi: null,
       uniswapPair: null,
+      univ2StakingPool: null,
+      weth: null,
 
       loading: false,
       loaded: false,
@@ -574,7 +577,7 @@ export default {
       inputStakeJDFI: '',
       inputUnstakeJDFIS: '',
       inputStakeUNIV2: '',
-      inputUnstakeUNIV2: '',
+      inputUnstakeUNIV2S: '',
       inputUnlockJDFIS: '',
 
       balanceFeePoolJDFI: BigNumber.from(0),
@@ -689,6 +692,7 @@ export default {
         this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
         this.airdropToken = new ethers.Contract(this.airdropTokenAddress, AirdropToken, signer);
         this.uniswapPair = new ethers.Contract(this.uniswapPairAddress, IUniswapV2Pair, signer);
+        this.weth = new ethers.Contract(this.wethAddress, IERC20, signer);
       } catch (e) {
         this.error = e.message;
       }
@@ -753,6 +757,32 @@ export default {
 
       try {
         let tx = await this.jdfiStakingPool.unstake(ethers.utils.parseEther(this.inputUnstakeJDFIS));
+        await tx.wait();
+      } catch (e) {
+
+        this.error = e.data && e.data.message;
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
+
+    unstakeUNIV2S: async function () {
+      this.loading = true;
+
+      try {
+        let amount = ethers.utils.parseEther(this.inputUnstakeUNIV2S);
+        let total = await this.univ2StakingPool.callStatic.totalSupply();
+
+        let liquidityJDFI = await this.jusdefi.callStatic.balanceOf(this.uniswapPairAddress);
+        let liquidityWETH = await this.weth.callStatic.balanceOf(this.uniswapPairAddress);
+
+        let tx = await this.jdfiStakingPool.unstake(
+          amount,
+          liquidityJDFI.mul(amount).div(total).mul(BigNumber.from(99)).div(BigNumber.from(100)),
+          liquidityWETH.mul(amount).div(total).mul(BigNumber.from(99)).div(BigNumber.from(100))
+        );
         await tx.wait();
       } catch (e) {
 
@@ -880,7 +910,7 @@ export default {
     },
 
     setMaxUnstakeUNIV2: function () {
-      this.inputUnstakeUNIV2 = ethers.utils.formatEther(this.balanceUNIV2S);
+      this.inputUnstakeUNIV2S = ethers.utils.formatEther(this.balanceUNIV2S);
     },
 
     setMaxUnlockJDFIS: function () {
