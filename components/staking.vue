@@ -147,7 +147,7 @@
               </tr>
               <tr>
                 <td>Staked JDFI Balance</td>
-                <td>{{ formatBalance(balanceJDFIS.add(balanceJDFISLocked)) }}</td>
+                <td>{{ formatBalance(balanceJDFISUnlocked.add(balanceJDFISLocked)) }}</td>
               </tr>
               <tr>
                 <td>Unclaimed Rewards</td>
@@ -208,7 +208,7 @@
               <button
                 type="button"
                 class="button is-info"
-                :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
+                :disabled="!$store.getters.connected || balanceJDFISUnlocked.isZero()"
                 @click="setMaxUnstakeJDFIS()"
               >
                 <format-vertical-align-top-icon
@@ -220,7 +220,7 @@
               <button
                 type="button"
                 class="button is-fullwidth is-info"
-                :disabled="!$store.getters.connected || balanceJDFIS.isZero()"
+                :disabled="!$store.getters.connected || balanceJDFISUnlocked.isZero()"
                 @click="unstakeJDFIS()"
               >
                 Unstake JDFI
@@ -565,7 +565,8 @@ export default {
 
       balanceETH: BigNumber.from(0),
       balanceJDFI: BigNumber.from(0),
-      balanceJDFIS: BigNumber.from(0),
+      balanceJDFIS: BigNumber.from(0), // locked + unlocked
+      balanceJDFISUnlocked: BigNumber.from(0),
       balanceJDFISLocked: BigNumber.from(0),
       balanceJDFIA: BigNumber.from(0),
       balanceUNIV2: BigNumber.from(0),
@@ -607,7 +608,7 @@ export default {
     },
 
     rewardsWeeklyJDFI: function () {
-      let shares = this.balanceJDFIS.add(this.balanceJDFISLocked);
+      let shares = this.balanceJDFISUnlocked.add(this.balanceJDFISLocked);
       return shares.mul(this.balanceFeePoolJDFI).div(this.totalRewardShares);
     },
 
@@ -714,9 +715,9 @@ export default {
       }
 
       if (this.jdfiStakingPool) {
-        let totalBalance = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
+        this.balanceJDFIS = await this.jdfiStakingPool.callStatic.balanceOf(currentAccount);
         this.balanceJDFISLocked = await this.jdfiStakingPool.callStatic.lockedBalanceOf(currentAccount);
-        this.balanceJDFIS = totalBalance.sub(this.balanceJDFISLocked);
+        this.balanceJDFISUnlocked = this.balanceJDFIS.sub(this.balanceJDFISLocked);
         this.rewardsJDFI = await this.jdfiStakingPool.callStatic.rewardsOf(currentAccount);
       }
 
@@ -759,7 +760,6 @@ export default {
         let tx = await this.jdfiStakingPool.unstake(ethers.utils.parseEther(this.inputUnstakeJDFIS));
         await tx.wait();
       } catch (e) {
-
         this.error = e.data && e.data.message;
       }
 
@@ -901,7 +901,7 @@ export default {
     },
 
     setMaxUnstakeJDFIS: function () {
-      this.inputUnstakeJDFIS = ethers.utils.formatEther(this.balanceJDFIS);
+      this.inputUnstakeJDFIS = ethers.utils.formatEther(this.balanceJDFISUnlocked);
     },
 
     setMaxStakeUNIV2: function () {
