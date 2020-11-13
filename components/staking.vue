@@ -147,7 +147,7 @@
               </tr>
               <tr>
                 <td>Staked JDFI Balance</td>
-                <td>{{ formatBalance(balanceJDFISUnlocked.add(balanceJDFISLocked)) }}</td>
+                <td>{{ formatBalance(balanceJDFIS) }}</td>
               </tr>
               <tr>
                 <td>Unclaimed Rewards</td>
