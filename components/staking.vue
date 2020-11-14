@@ -44,101 +44,6 @@
       <div class="level">
         <div class="level-left">
           <h2 class="subtitle has-text-dark">
-            Governance
-          </h2>
-        </div>
-
-        <div class="level-right">
-          <div class="level-item">
-            <a
-              :href="`https://etherscan.io/address/${ feePoolAddress }`"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="has-text-dark"
-            >
-              <open-in-new-icon title="Open on Etherscan" />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="columns">
-        <div class="column">
-          <table class="table">
-            <tbody>
-              <tr>
-                <td>Next Rewards Distribution</td>
-                <td>{{ timeLeftRebase }}</td>
-              </tr>
-              <tr>
-                <td>Next Buyback</td>
-                <td>{{ timeLeftBuyback }}</td>
-              </tr>
-              <tr>
-                <td>Current Unstaking Fee</td>
-                <td>{{ formatBP(feeCurrent) }}</td>
-              </tr>
-              <tr>
-                <td>Next Unstaking Fee</td>
-                <td>{{ formatBP(feeNext) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="column">
-          <div class="field has-addons">
-            <p class="control">
-              <input
-                v-model="inputVoteIncrease"
-                placeholder="ETH Amount"
-                class="input"
-                type="number"
-              >
-            </p>
-            <p class="control is-expanded">
-              <button
-                type="button"
-                class="button is-fullwidth is-info"
-                :disabled="!$store.getters.connected"
-                @click="voteIncrease()"
-              >
-                Increase Next Fee
-              </button>
-            </p>
-          </div>
-
-          <div class="field has-addons">
-            <p class="control">
-              <input
-                v-model="inputVoteDecrease"
-                placeholder="ETH Amount"
-                class="input"
-                type="number"
-              >
-            </p>
-            <p class="control is-expanded">
-              <button
-                type="button"
-                class="button is-fullwidth is-info"
-                :disabled="!$store.getters.connected"
-                @click="voteDecrease()"
-              >
-                Decrease Next Fee
-              </button>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="box"
-      :class="{ 'is-loading': loading, 'is-not-loaded': !loaded }"
-    >
-      <div class="level">
-        <div class="level-left">
-          <h2 class="subtitle has-text-dark">
             Stake JDFI
           </h2>
         </div>
@@ -449,6 +354,127 @@
                 Compound
               </button>
             </p> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="box"
+      :class="{ 'is-loading': loading, 'is-not-loaded': !loaded }"
+    >
+      <div class="level">
+        <div class="level-left">
+          <h2 class="subtitle has-text-dark">
+            Governance
+          </h2>
+        </div>
+
+        <div class="level-right">
+          <div class="level-item">
+            <a
+              :href="`https://etherscan.io/address/${ feePoolAddress }`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="has-text-dark"
+            >
+              <open-in-new-icon title="Open on Etherscan" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>Next Rewards Distribution</td>
+                <td>{{ timeLeftRebase }}</td>
+              </tr>
+              <tr>
+                <td>Next Buyback</td>
+                <td>{{ timeLeftBuyback }}</td>
+              </tr>
+              <tr>
+                <td>Current Unstaking Fee</td>
+                <td>{{ formatBP(feeCurrent) }}</td>
+              </tr>
+              <tr>
+                <td>Next Unstaking Fee</td>
+                <td>{{ formatBP(feeNext) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="column">
+          <div class="field is-grouped">
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="rewardsUNIV2.isZero()"
+                @click="rebase()"
+              >
+                Distribute Rewards
+              </button>
+            </p>
+          </div>
+
+          <div class="field is-grouped">
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="rewardsUNIV2.isZero()"
+                @click="buyback()"
+              >
+                Execute Buyback
+              </button>
+            </p>
+          </div>
+
+          <div class="field has-addons">
+            <p class="control">
+              <input
+                v-model="inputVoteIncrease"
+                placeholder="ETH Amount"
+                class="input"
+                type="number"
+              >
+            </p>
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="!$store.getters.connected"
+                @click="voteIncrease()"
+              >
+                Increase Next Fee
+              </button>
+            </p>
+          </div>
+
+          <div class="field has-addons">
+            <p class="control">
+              <input
+                v-model="inputVoteDecrease"
+                placeholder="ETH Amount"
+                class="input"
+                type="number"
+              >
+            </p>
+            <p class="control is-expanded">
+              <button
+                type="button"
+                class="button is-fullwidth is-info"
+                :disabled="!$store.getters.connected"
+                @click="voteDecrease()"
+              >
+                Decrease Next Fee
+              </button>
+            </p>
           </div>
         </div>
       </div>
