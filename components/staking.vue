@@ -35,8 +35,32 @@
       <p>Welcome to the JusDeFi Staking Dashboard.  Earn rewards on staked JDFI or Uniswap liquidity tokens, and vote on protocol adjustments.  See our staking guide for more information.</p>
 
       <p>JDFI is available on <a href="https://app.uniswap.org/#/swap?outputCurrency=0x75cdc4f6be18dc003dc2ae424f85d1243f0fb781">Uniswap</a>.</p>
+    </div>
 
-      <!-- <br>
+    <div
+      class="box"
+      :class="{ 'is-loading': loading, 'is-not-loaded': !loaded }"
+    >
+      <div class="level">
+        <div class="level-left">
+          <h2 class="subtitle has-text-dark">
+            Governance
+          </h2>
+        </div>
+
+        <div class="level-right">
+          <div class="level-item">
+            <a
+              :href="`https://etherscan.io/address/${ feePoolAddress }`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="has-text-dark"
+            >
+              <open-in-new-icon title="Open on Etherscan" />
+            </a>
+          </div>
+        </div>
+      </div>
 
       <div class="columns">
         <div class="column">
@@ -44,15 +68,19 @@
             <tbody>
               <tr>
                 <td>Next Rewards Distribution</td>
-                <td>{{ 'TODO' }}</td>
+                <td>{{ timeLeftRebase }}</td>
               </tr>
               <tr>
                 <td>Next Buyback</td>
-                <td>{{ 'TODO' }}</td>
+                <td>{{ timeLeftBuyback }}</td>
               </tr>
               <tr>
                 <td>Current Unstaking Fee</td>
-                <td>{{ 'TODO' }}</td>
+                <td>{{ formatBP(feeCurrent) }}</td>
+              </tr>
+              <tr>
+                <td>Next Unstaking Fee</td>
+                <td>{{ formatBP(feeNext) }}</td>
               </tr>
             </tbody>
           </table>
@@ -101,7 +129,7 @@
             </p>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
 
     <div
@@ -575,6 +603,9 @@ export default {
       rewardsJDFI: BigNumber.from(0),
       rewardsUNIV2: BigNumber.from(0),
 
+      inputVoteIncrease: '',
+      inputVoteDecrease: '',
+
       inputStakeJDFI: '',
       inputUnstakeJDFIS: '',
       inputStakeUNIV2: '',
@@ -590,11 +621,16 @@ export default {
 
       approvedUNIV2: BigNumber.from(0),
 
-      // deadlineRebase: 'TODO: Sunday',
-      // timeLeftRebase: 'TODO',
-      //
-      // deadlineBuyback: 'TODO: Friday',
-      // timeLeftBuyback: 'TODO',
+      deadlineRebase: Math.floor(this.getNextDate(0).getTime() / 1000),
+      timeLeftRebase: this.formatTimeRemaining(new Date()),
+
+      deadlineBuyback: Math.floor(this.getNextDate(5).getTime() / 1000),
+      timeLeftBuyback: this.formatTimeRemaining(new Date()),
+
+      votesIncrease: BigNumber.from(0),
+      votesDecrease: BigNumber.from(0),
+
+      feeCurrent: BigNumber.from(1000),
     };
   },
 
@@ -646,6 +682,14 @@ export default {
         this.balanceUNIV2StakingPoolJDFI.add(BigNumber.from(1))
       );
     },
+
+    feeNext: function () {
+      let net = this.votesIncrease.sub(this.votesDecrease).abs();
+
+      return BigNumber.from(1000)[
+        this.votesIncrease.gt(this.votesDecrease) ? 'add' : 'sub'
+      ](BigNumber.from(1000).mul(net.div(ethers.utils.parseEther('3').add(net))));
+    },
   },
 
   watch: {
@@ -659,6 +703,12 @@ export default {
       } else {
         this.loaded = false;
       }
+    },
+
+    feePool: async function () {
+      this.votesIncrease = await this.feePool.callStatic._votesIncrease();
+      this.votesDecrease = await this.feePool.callStatic._votesDecrease();
+      this.feeCurrent = await this.feePool.callStatic._fee();
     },
 
     jusdefi: async function () {
@@ -676,8 +726,8 @@ export default {
 
   mounted: function () {
     setInterval(function () {
-      // this.timeLeftBuyback = this.formatTimeRemaining(this.deadlineBuyback);
-      // this.timeLeftRebase = this.formatTimeRemaining(this.deadlineRebase);
+      this.timeLeftBuyback = this.formatTimeRemaining(this.deadlineBuyback);
+      this.timeLeftRebase = this.formatTimeRemaining(this.deadlineRebase);
     }.bind(this), 1000);
   },
 
@@ -688,7 +738,7 @@ export default {
       try {
         let signer = this.$store.getters.provider.getSigner();
         this.jusdefi = new ethers.Contract(this.jusdefiAddress, JusDeFi, signer);
-        // this.feePool = new ethers.Contract(this.feePoolAddress, FeePool, signer);
+        this.feePool = new ethers.Contract(this.feePoolAddress, FeePool, signer);
         this.jdfiStakingPool = new ethers.Contract(this.jdfiStakingPoolAddress, JDFIStakingPool, signer);
         this.univ2StakingPool = new ethers.Contract(this.univ2StakingPoolAddress, UNIV2StakingPool, signer);
         this.airdropToken = new ethers.Contract(this.airdropTokenAddress, AirdropToken, signer);
@@ -736,6 +786,40 @@ export default {
 
       this.loading = false;
       this.loaded = true;
+    },
+
+    voteIncrease: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.feePool.vote(true, {
+          value: ethers.utils.parseEther(this.inputVoteIncrease),
+        });
+        await tx.wait();
+      } catch (e) {
+        this.error = e.data && e.data.message;
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
+    },
+
+    voteDecrease: async function () {
+      this.loading = true;
+
+      try {
+        let tx = await this.feePool.vote(true, {
+          value: ethers.utils.parseEther(this.inputVoteDecrease),
+        });
+        await tx.wait();
+      } catch (e) {
+        this.error = e.data && e.data.message;
+      }
+
+      this.loading = false;
+
+      await this.getBalances();
     },
 
     stakeJDFI: async function () {
@@ -916,6 +1000,10 @@ export default {
       this.inputUnlockJDFIS = ethers.utils.formatEther(this.balanceJDFISLocked);
     },
 
+    formatBP: function (bn) {
+      return `${ bn.toNumber() / 100 }%`;
+    },
+
     formatBalance: function (bn, decimals = 2) {
       return (Number((bn || BigNumber.from(0)).toString()) / 1e18).toFixed(decimals);
     },
@@ -929,6 +1017,13 @@ export default {
       let days    = Math.floor(remaining / (60 * 60 * 24));
 
       return [days, hours, minutes, seconds].map(n => `${ n }`.padStart(2, '0')).join(':');
+    },
+
+    getNextDate: function (day) {
+      let now = new Date();
+      return new Date(
+        now.getTime() - (now.getTime() % 86400000) + (7 + day - now.getUTCDay()) % 7 * 86400000
+      );
     },
   },
 };
