@@ -809,7 +809,7 @@ export default {
       this.loading = true;
 
       try {
-        let tx = await this.feePool.vote(true, {
+        let tx = await this.feePool.vote(false, {
           value: ethers.utils.parseEther(this.inputVoteDecrease),
         });
         await tx.wait();
