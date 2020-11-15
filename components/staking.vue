@@ -711,10 +711,14 @@ export default {
 
     feeNext: function () {
       let net = this.votesIncrease.sub(this.votesDecrease).abs();
+      let base = BigNumber.from(1000);
+      let delta = BigNumber.from(1000).mul(net).div(
+        ethers.utils.parseEther('3').add(net)
+      );
 
-      return BigNumber.from(1000)[
+      return base[
         this.votesIncrease.gt(this.votesDecrease) ? 'add' : 'sub'
-      ](BigNumber.from(1000).mul(net.div(ethers.utils.parseEther('3').add(net))));
+      ](delta);
     },
   },
 
@@ -1027,7 +1031,7 @@ export default {
     },
 
     formatBP: function (bn) {
-      return `${ bn.toNumber() / 100 }%`;
+      return `${ (bn.toNumber() / 100).toFixed(2) }%`;
     },
 
     formatBalance: function (bn, decimals = 2) {
