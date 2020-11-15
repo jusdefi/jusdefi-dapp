@@ -687,11 +687,7 @@ export default {
       let denominator = this.balanceJDFIStakingPoolJDFI.add(this.balanceUNIV2StakingPoolJDFI.mul(BigNumber.from(3)));
       let rewards = this.balanceFeePoolJDFI.mul(this.balanceJDFIStakingPoolJDFI).div(denominator);
 
-      let day = new Date().getUTCDay();
-
-      return BigNumber.from(100).mul(rewards).mul(BigNumber.from(365)).div(
-        BigNumber.from(day + 1)
-      ).div(
+      return BigNumber.from(100).mul(rewards).mul(BigNumber.from(52)).div(
         this.balanceJDFIStakingPoolJDFI
       );
     },
@@ -700,11 +696,7 @@ export default {
       let denominator = this.balanceJDFIStakingPoolJDFI.add(this.balanceUNIV2StakingPoolJDFI.mul(BigNumber.from(3)));
       let rewards = this.balanceFeePoolJDFI.mul(this.balanceUNIV2StakingPoolJDFI).mul(BigNumber.from(3)).div(BigNumber.from(2)).div(denominator);
 
-      let day = new Date().getUTCDay();
-
-      return BigNumber.from(100).mul(rewards).mul(BigNumber.from(365)).div(
-        BigNumber.from(day + 1)
-      ).div(
+      return BigNumber.from(100).mul(rewards).mul(BigNumber.from(52)).div(
         this.balanceUNIV2StakingPoolJDFI.add(BigNumber.from(1))
       );
     },
