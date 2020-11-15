@@ -1052,7 +1052,7 @@ export default {
     getNextDate: function (day) {
       let now = new Date();
       return new Date(
-        now.getTime() - (now.getTime() % 86400000) + (7 + day - now.getUTCDay()) % 7 * 86400000
+        now.getTime() - (now.getTime() % 86400000) + ((7 + day - now.getUTCDay()) % 7 || 7) * 86400000
       );
     },
   },
