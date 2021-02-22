@@ -5476,9 +5476,9 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-"jusdefi@https://github.com/jusdefi/jusdefi":
+"jusdefi-contracts@https://github.com/jusdefi/jusdefi-contracts":
   version "0.0.0"
-  resolved "https://github.com/jusdefi/jusdefi#c5e77c4d9e588bc8e1f61b9b9343919d7cd620db"
+  resolved "https://github.com/jusdefi/jusdefi-contracts#0b719b8c3f532244a1be5932bfa5d884461c2651"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"

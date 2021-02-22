@@ -583,15 +583,15 @@ import { ethers, BigNumber } from 'ethers';
 import FormatVerticalAlignTopIcon from 'vue-material-design-icons/FormatVerticalAlignTop.vue';
 import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue';
 
-import JusDeFi from 'jusdefi/abi/JusDeFi.json';
-import FeePool from 'jusdefi/abi/FeePool.json';
-import JDFIStakingPool from 'jusdefi/abi/JDFIStakingPool.json';
-import UNIV2StakingPool from 'jusdefi/abi/UNIV2StakingPool.json';
-import AirdropToken from 'jusdefi/abi/AirdropToken.json';
-import IUniswapV2Pair from 'jusdefi/abi/IUniswapV2Pair.json';
-import IERC20 from 'jusdefi/abi/IERC20.json';
+import JusDeFi from 'jusdefi-contracts/abi/JusDeFi.json';
+import FeePool from 'jusdefi-contracts/abi/FeePool.json';
+import JDFIStakingPool from 'jusdefi-contracts/abi/JDFIStakingPool.json';
+import UNIV2StakingPool from 'jusdefi-contracts/abi/UNIV2StakingPool.json';
+import AirdropToken from 'jusdefi-contracts/abi/AirdropToken.json';
+import IUniswapV2Pair from 'jusdefi-contracts/abi/IUniswapV2Pair.json';
+import IERC20 from 'jusdefi-contracts/abi/IERC20.json';
 
-import deployments from 'jusdefi/data/deployments.json';
+import deployments from 'jusdefi-contracts/data/deployments.json';
 
 export default {
   components: { FormatVerticalAlignTopIcon, OpenInNewIcon },

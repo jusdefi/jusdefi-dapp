@@ -1,4 +1,4 @@
-# JusDeFi Dapp
+# JusDeFi UI
 
 Front end application for interaction with JusDeFi contracts.
 
