@@ -50,10 +50,6 @@
 
         <div class="level-right">
           <div class="level-item">
-            ~{{ apyJDFI }}% APY
-          </div>
-
-          <div class="level-item">
             <a
               :href="`https://etherscan.io/address/${ jdfiStakingPoolAddress }`"
               target="_blank"
@@ -199,10 +195,6 @@
         </div>
 
         <div class="level-right">
-          <div class="level-item">
-            ~{{ apyUNIV2 }}% APY
-          </div>
-
           <div class="level-item">
             <a
               :href="`https://etherscan.io/address/${ univ2StakingPoolAddress }`"
